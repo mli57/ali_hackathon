@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>北京惠民补贴 · 资格查询</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main>
+    <header>
+      <h1>北京惠民补贴查询</h1>
+      <p class="sub">回答几个问题，看看您可以申请哪些补贴。</p>
+    </header>
+
+    <div id="error" class="error" hidden></div>
+
+    <form id="intake">
+      <div id="fields"></div>
+      <button type="submit">下一步</button>
+    </form>
+
+    <p class="note">
+      本工具仅提供政策匹配参考，最终以各主管部门审核结果为准。
+    </p>
+  </main>
+
+  <script>
+    window.API_BASE = "http://127.0.0.1:8003";
+  </script>
+  <script>
+    window.API_BASE = "http://127.0.0.1:8003";
+  </script>
+  <script src="app.js"></script>
+  <script>
+    // The gating set. Everything else is asked only if a live program needs it.
+    const GATING = ["hukou_type", "household_size", "household_monthly_income"];
+
+    const saved = store.profile;
+    document.getElementById("fields").innerHTML =
+      GATING.map((name) => renderField(name, saved[name])).join("");
+
+    document.getElementById("intake").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const button = event.target.querySelector("button");
+      button.disabled = true;
+      try {
+        const profile = readForm(event.target);
+        const confirmed = await post("/profile/confirm", profile);
+        store.profile = profile;
+        sessionStorage.setItem("confirm", JSON.stringify(confirmed));
+        location.href = "confirm.html";
+      } catch (err) {
+        showError(String(err.message || err));
+        button.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

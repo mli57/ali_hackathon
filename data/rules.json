@@ -1,0 +1,361 @@
+{
+  "_generated": "by scripts/build_rules.py -- do not hand-edit",
+  "programs": [
+    {
+      "program_id": "bj_housing_market_rent_subsidy",
+      "name": "市场租房补贴",
+      "domain": "housing",
+      "agency": "北京市住房和城乡建设委员会",
+      "document_refs": [],
+      "source_url": "https://www.beijing.gov.cn/fuwu/bmfw/bmjy/202109/t20210926_2501951.html",
+      "required_attributes": [
+        "hukou_type",
+        "household_size",
+        "household_monthly_income",
+        "household_assets",
+        "owns_property",
+        "district",
+        "monthly_rent",
+        "welfare_status"
+      ],
+      "key_definitions": {
+        "income_tier": {
+          "kind": "range_lookup",
+          "attr": "per_capita_monthly_income",
+          "overrides": [
+            {
+              "attr": "welfare_status",
+              "equals": "dibao",
+              "value": 1
+            },
+            {
+              "attr": "welfare_status",
+              "equals": "tekun",
+              "value": 1
+            },
+            {
+              "attr": "welfare_status",
+              "equals": "low_income",
+              "value": 2
+            }
+          ],
+          "bands": [
+            {
+              "value": 3,
+              "min": null,
+              "max": 2700.0
+            },
+            {
+              "value": 4,
+              "min": 2700.0,
+              "max": 3200.0
+            },
+            {
+              "value": 5,
+              "min": 3200.0,
+              "max": 3700.0
+            },
+            {
+              "value": 6,
+              "min": 3700.0,
+              "max": 4200.0
+            }
+          ],
+          "groups": {},
+          "default": null
+        },
+        "household_size_bucket": {
+          "kind": "range_lookup",
+          "attr": "household_size",
+          "overrides": [],
+          "bands": [
+            {
+              "value": "<=2",
+              "min": null,
+              "max": 2.0
+            },
+            {
+              "value": "3+",
+              "min": 3.0,
+              "max": null
+            }
+          ],
+          "groups": {},
+          "default": null
+        },
+        "asset_size_bucket": {
+          "kind": "range_lookup",
+          "attr": "household_size",
+          "overrides": [],
+          "bands": [
+            {
+              "value": "<=3",
+              "min": null,
+              "max": 3.0
+            },
+            {
+              "value": ">=4",
+              "min": 4.0,
+              "max": null
+            }
+          ],
+          "groups": {},
+          "default": null
+        },
+        "district_group": {
+          "kind": "set_lookup",
+          "attr": "district",
+          "overrides": [],
+          "bands": [],
+          "groups": {
+            "outer": [
+              "怀柔区",
+              "平谷区",
+              "密云区",
+              "延庆区"
+            ]
+          },
+          "default": "standard"
+        }
+      },
+      "eligibility": {
+        "all_of": [
+          {
+            "attr": "hukou_type",
+            "op": "in",
+            "value": [
+              "bj_urban"
+            ],
+            "clause": null,
+            "note": "北京市城镇户籍家庭"
+          },
+          {
+            "attr": "per_capita_monthly_income",
+            "op": "<=",
+            "value": 4200,
+            "clause": null,
+            "note": "申请当月前12个月家庭人均月收入不高于 4200 元"
+          },
+          {
+            "attr": "owns_property",
+            "op": "==",
+            "value": false,
+            "clause": null,
+            "note": "申请家庭成员在本市均无住房且在本市生活"
+          },
+          {
+            "attr": "household_assets",
+            "op": "<=",
+            "value": {
+              "kind": "table",
+              "keys": [
+                "asset_size_bucket"
+              ],
+              "rows": [
+                {
+                  "asset_size_bucket": "<=3",
+                  "value": 570000
+                },
+                {
+                  "asset_size_bucket": ">=4",
+                  "value": 760000
+                }
+              ]
+            },
+            "clause": null,
+            "note": "3人及以下家庭总资产净值不高于 57 万元；4人及以上不高于 76 万元"
+          }
+        ]
+      },
+      "benefit": {
+        "cadence": "monthly",
+        "amount": {
+          "kind": "table",
+          "keys": [
+            "income_tier",
+            "household_size_bucket",
+            "district_group"
+          ],
+          "rows": [
+            {
+              "income_tier": 1,
+              "household_size_bucket": "<=2",
+              "district_group": "standard",
+              "value": 2500
+            },
+            {
+              "income_tier": 1,
+              "household_size_bucket": "3+",
+              "district_group": "standard",
+              "value": 3500
+            },
+            {
+              "income_tier": 1,
+              "household_size_bucket": "<=2",
+              "district_group": "outer",
+              "value": 1500
+            },
+            {
+              "income_tier": 1,
+              "household_size_bucket": "3+",
+              "district_group": "outer",
+              "value": 2100
+            },
+            {
+              "income_tier": 2,
+              "household_size_bucket": "<=2",
+              "district_group": "standard",
+              "value": 2200
+            },
+            {
+              "income_tier": 2,
+              "household_size_bucket": "3+",
+              "district_group": "standard",
+              "value": 3000
+            },
+            {
+              "income_tier": 2,
+              "household_size_bucket": "<=2",
+              "district_group": "outer",
+              "value": 1320
+            },
+            {
+              "income_tier": 2,
+              "household_size_bucket": "3+",
+              "district_group": "outer",
+              "value": 1800
+            },
+            {
+              "income_tier": 3,
+              "household_size_bucket": "<=2",
+              "district_group": "standard",
+              "value": 1900
+            },
+            {
+              "income_tier": 3,
+              "household_size_bucket": "3+",
+              "district_group": "standard",
+              "value": 2500
+            },
+            {
+              "income_tier": 3,
+              "household_size_bucket": "<=2",
+              "district_group": "outer",
+              "value": 1140
+            },
+            {
+              "income_tier": 3,
+              "household_size_bucket": "3+",
+              "district_group": "outer",
+              "value": 1500
+            },
+            {
+              "income_tier": 4,
+              "household_size_bucket": "<=2",
+              "district_group": "standard",
+              "value": 1600
+            },
+            {
+              "income_tier": 4,
+              "household_size_bucket": "3+",
+              "district_group": "standard",
+              "value": 2000
+            },
+            {
+              "income_tier": 4,
+              "household_size_bucket": "<=2",
+              "district_group": "outer",
+              "value": 960
+            },
+            {
+              "income_tier": 4,
+              "household_size_bucket": "3+",
+              "district_group": "outer",
+              "value": 1200
+            },
+            {
+              "income_tier": 5,
+              "household_size_bucket": "<=2",
+              "district_group": "standard",
+              "value": 1300
+            },
+            {
+              "income_tier": 5,
+              "household_size_bucket": "3+",
+              "district_group": "standard",
+              "value": 1500
+            },
+            {
+              "income_tier": 5,
+              "household_size_bucket": "<=2",
+              "district_group": "outer",
+              "value": 780
+            },
+            {
+              "income_tier": 5,
+              "household_size_bucket": "3+",
+              "district_group": "outer",
+              "value": 900
+            },
+            {
+              "income_tier": 6,
+              "household_size_bucket": "<=2",
+              "district_group": "standard",
+              "value": 1000
+            },
+            {
+              "income_tier": 6,
+              "household_size_bucket": "3+",
+              "district_group": "standard",
+              "value": 1200
+            },
+            {
+              "income_tier": 6,
+              "household_size_bucket": "<=2",
+              "district_group": "outer",
+              "value": 600
+            },
+            {
+              "income_tier": 6,
+              "household_size_bucket": "3+",
+              "district_group": "outer",
+              "value": 720
+            }
+          ]
+        },
+        "caps": [
+          {
+            "kind": "not_to_exceed",
+            "profile_field": "monthly_rent"
+          }
+        ],
+        "duration": {
+          "kind": "ongoing_conditional",
+          "months": null,
+          "review": "按月发放，需持续满足资格条件"
+        }
+      },
+      "exclusivity_group": "bj_housing",
+      "claim_steps": [
+        "使用《北京市住房租赁合同》示范文本签订租赁合同",
+        "办理住房租赁登记备案",
+        "向街道办事处提出申请，经初审后由区住房保障管理部门复审",
+        "审核通过后由区住房保障管理部门委托代发银行按月发放"
+      ],
+      "required_documents": [
+        "身份证明及户口簿",
+        "《北京市住房租赁合同》示范文本及租赁登记备案证明",
+        "家庭收入及资产证明",
+        "民政部门认定文件（低保、特困或低收入家庭适用）"
+      ],
+      "benefit_caveats": [
+        "若家庭成员中有重度残疾人员、患重大疾病人员，或家庭成员均为 60 周岁以上老人且无子女，可提高一档补贴标准。",
+        "若为东城区或西城区家庭，租赁城六区以外房源并办理租赁备案，可提高两档补贴标准。",
+        "提档条件可累加，提高后不超过第一档。上述金额未计入提档，实际可能更高。"
+      ],
+      "confidence": "high",
+      "notes": "三次抽取结果一致，补贴标准表内部自洽（四区为其他区的 60%）。尚未提取排除条款；文号待人工录入。",
+      "verified": true
+    }
+  ]
+}

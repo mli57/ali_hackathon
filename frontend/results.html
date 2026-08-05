@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>查询结果 · 北京惠民补贴</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main>
+    <header>
+      <h1>查询结果</h1>
+    </header>
+
+    <section class="totals" id="totals"></section>
+
+    <section id="qualified-section" hidden>
+      <h2>符合条件</h2>
+      <div id="qualified"></div>
+    </section>
+
+    <section id="alternatives-section" hidden>
+      <h2>可替代选择</h2>
+      <p class="sub">同类补贴不可同时享受。以下项目您也符合条件，可与上方项目二选一。</p>
+      <div id="alternatives"></div>
+    </section>
+
+    <section id="verify-section" hidden>
+      <h2>需进一步核验</h2>
+      <p class="sub">以下项目缺少判断所需信息，或政策条款需人工确认。</p>
+      <div id="needs_verification"></div>
+    </section>
+
+    <section id="excluded-section" hidden>
+      <h2>暂不符合</h2>
+      <div id="excluded"></div>
+    </section>
+
+    <p class="note">
+      本结果由政策规则自动匹配生成，仅供参考，不构成申请承诺。
+      最终资格与金额以各主管部门审核结果为准。
+    </p>
+    <p><a href="index.html">重新查询</a></p>
+  </main>
+
+  <script>
+    window.API_BASE = "http://127.0.0.1:8003";
+  </script>
+  <script src="app.js"></script>
+  <script>
+    const results = store.results;
+    if (!results) location.href = "index.html";
+
+    const totals = results.totals || { monthly: 0, one_time: 0 };
+    const figures = [];
+    // Monthly and one-time are shown as separate figures. Adding ¥/月 to a
+    // one-off payment would produce a number that doesn't mean anything.
+    if (totals.monthly) figures.push(`<div><strong>¥${totals.monthly.toLocaleString("zh-CN")}</strong><span>每月</span></div>`);
+    if (totals.one_time) figures.push(`<div><strong>¥${totals.one_time.toLocaleString("zh-CN")}</strong><span>一次性</span></div>`);
+    document.getElementById("totals").innerHTML = figures.length
+      ? figures.join("")
+      : `<div><strong>—</strong><span>暂无可直接确认的补贴</span></div>`;
+
+    function card(result) {
+      const reasons = [];
+      if (result.status === "needs_verification") {
+        if (result.unresolved_attributes.length) {
+          const labels = result.unresolved_attributes
+            .map((a) => (FIELDS[a] || {}).label || a).join("、");
+          reasons.push(`缺少信息：${labels}`);
+        }
+        result.review_clauses.forEach((c) => reasons.push(`需人工核验：${c}`));
+      }
+      result.failed_conditions.forEach((c) => reasons.push(`不满足：${c}`));
+
+      // Citations come from the manifest, so this is either a real 文号 or
+      // visibly absent. It is never a plausible-looking invented one.
+      const refs = result.document_refs.length
+        ? `<span class="ref">${result.document_refs.join("、")}</span>`
+        : `<span class="ref missing">文号待补充</span>`;
+
+      return `
+        <article class="card ${result.status}">
+          <div class="card-head">
+            <h3>${result.name}</h3>
+            <div class="amount">${money(result.amount, result.cadence)}</div>
+          </div>
+          ${result.superseded_by ? `<p class="sub">与已选项目不可同时享受</p>` : ""}
+          ${result.explanation ? `<p class="explanation">${result.explanation}</p>` : ""}
+          ${reasons.length ? `<ul class="reasons">${reasons.map((r) => `<li>${r}</li>`).join("")}</ul>` : ""}
+          ${result.caveats && result.caveats.length ? `
+            <ul class="caveats">${result.caveats.map((c) => `<li>${c}</li>`).join("")}</ul>` : ""}
+          ${result.claim_steps.length ? `
+            <details>
+              <summary>如何申请</summary>
+              <ol>${result.claim_steps.map((s) => `<li>${s}</li>`).join("")}</ol>
+              ${result.required_documents.length ? `
+                <p class="sub">所需材料</p>
+                <ul>${result.required_documents.map((d) => `<li>${d}</li>`).join("")}</ul>` : ""}
+            </details>` : ""}
+          <footer>
+            <span>${result.agency || "北京市"}</span>
+            ${refs}
+            ${result.source_url ? `<a href="${result.source_url}" target="_blank" rel="noopener">政策原文</a>` : ""}
+            ${!result.verified ? `<span class="warn">数据未经复核</span>` : ""}
+          </footer>
+        </article>`;
+    }
+
+    for (const bucket of ["qualified", "alternatives", "needs_verification", "excluded"]) {
+      const items = results[bucket] || [];
+      if (!items.length) continue;
+      const sectionId = bucket === "needs_verification" ? "verify-section" : `${bucket}-section`;
+      document.getElementById(sectionId).hidden = false;
+      document.getElementById(bucket).innerHTML = items.map(card).join("");
+    }
+  </script>
+</body>
+</html>

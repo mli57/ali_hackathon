@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>确认信息 · 北京惠民补贴</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main>
+    <header>
+      <h1>请确认您的信息</h1>
+      <p class="sub">确认无误后，我们会再问几个与您可能符合的补贴相关的问题。</p>
+    </header>
+
+    <div id="error" class="error" hidden></div>
+
+    <form id="confirm-form">
+      <section>
+        <h2>已填写</h2>
+        <div id="known"></div>
+      </section>
+
+      <section id="derived-section" hidden>
+        <h2>系统计算</h2>
+        <ul id="derived" class="derived"></ul>
+      </section>
+
+      <section id="followup-section" hidden>
+        <h2>还需了解</h2>
+        <p class="sub" id="followup-why"></p>
+        <div id="followups"></div>
+      </section>
+
+      <button type="submit">查询补贴</button>
+    </form>
+  </main>
+
+  <script>
+    window.API_BASE = "http://127.0.0.1:8003";
+  </script>
+  <script src="app.js"></script>
+  <script>
+    const confirmed = JSON.parse(sessionStorage.getItem("confirm") || "null");
+    if (!confirmed) location.href = "index.html";
+
+    const profile = confirmed.profile;
+
+    // Everything already answered stays editable. Nothing moves forward until
+    // the user confirms it -- they know their own household better than we do.
+    document.getElementById("known").innerHTML = Object.keys(profile)
+      .filter((name) => profile[name] !== null && FIELDS[name])
+      .map((name) => renderField(name, profile[name]))
+      .join("");
+
+    const derived = Object.entries(confirmed.derived || {})
+      .filter(([key]) => DERIVED_LABELS[key]);
+    if (derived.length) {
+      document.getElementById("derived-section").hidden = false;
+      document.getElementById("derived").innerHTML = derived
+        .map(([key, value]) =>
+          `<li><span>${DERIVED_LABELS[key]}</span><strong>${
+            Number(value).toLocaleString("zh-CN")
+          }</strong></li>`)
+        .join("");
+    }
+
+    const followUps = (confirmed.follow_ups || []).filter((q) => FIELDS[q.attr]);
+    if (followUps.length) {
+      document.getElementById("followup-section").hidden = false;
+      document.getElementById("followup-why").textContent =
+        `以下 ${followUps.length} 项用于判断您是否符合相关补贴条件。`;
+      document.getElementById("followups").innerHTML = followUps
+        .map((q) => renderField(q.attr, profile[q.attr]))
+        .join("");
+    }
+
+    document.getElementById("confirm-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const button = event.target.querySelector("button");
+      button.disabled = true;
+      try {
+        const finalProfile = { ...profile, ...readForm(event.target) };
+        const results = await post("/profile/finalize", finalProfile);
+        store.profile = finalProfile;
+        store.results = results;
+        location.href = "results.html";
+      } catch (err) {
+        showError(String(err.message || err));
+        button.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

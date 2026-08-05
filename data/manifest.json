@@ -1,0 +1,57 @@
+{
+  "_comment": [
+    "HAND-WRITTEN. One entry per policy document uploaded to the Bailian",
+    "knowledge base 北京惠民补贴政策库.",
+    "",
+    "Citations come from here and nowhere else. scripts/extract.py never",
+    "supplies a 文号 or a source_url -- it fills in eligibility and amounts",
+    "underneath a citation a human already recorded. A fabricated 文号 on a",
+    "results card is the worst error this product can make, because it looks",
+    "like proof.",
+    "",
+    "Fill in document_refs by opening the PDF and reading the 文号 off it."
+  ],
+  "documents": [
+    {
+      "program_id": "bj_housing_market_rent_subsidy",
+      "name": "市场租房补贴",
+      "domain": "housing",
+      "agency": "北京市住房和城乡建设委员会",
+      "document_refs": [],
+      "_document_refs_todo": [
+        "UNFILLED. Open the source PDF and record the 文号.",
+        "The earlier draft doc named 京建法〔2015〕16号 / 京建住〔2015〕19号 /",
+        "京建法〔2020〕6号 as candidates -- those were written from memory, not",
+        "read off a document. Verify before using them."
+      ],
+      "source_url": "https://www.beijing.gov.cn/fuwu/bmfw/bmjy/202109/t20210926_2501951.html",
+      "supplementary_urls": [
+        "https://zjw.beijing.gov.cn/bjjs/xxgk/zcjd2024/xxyx24/543334551/index"
+      ],
+      "uploaded": true,
+      "knowledge_base": "北京惠民补贴政策库",
+      "bailian_document": "TODO: the document name as it appears in the knowledge base",
+      "uploaded_by": "",
+      "retrieved_on": ""
+    },
+    {
+      "program_id": "bj_housing_public_rental_subsidy",
+      "name": "公共租赁住房货币补贴",
+      "domain": "housing",
+      "agency": "北京市住房和城乡建设委员会",
+      "document_refs": [],
+      "source_url": "",
+      "uploaded": false,
+      "knowledge_base": "北京惠民补贴政策库",
+      "bailian_document": "",
+      "uploaded_by": "",
+      "retrieved_on": "",
+      "_status": [
+        "NOT YET UPLOADED to the knowledge base. This is the other half of the",
+        "bj_housing exclusivity group -- until it exists, the aggregator's",
+        "conflict resolution is untested against real data.",
+        "Blocking task: find this policy document and upload it."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,132 @@
+:root {
+  --bg: #f6f7f9;
+  --card: #ffffff;
+  --ink: #1a1d21;
+  --muted: #6b7280;
+  --line: #e3e6ea;
+  --accent: #c8102e;
+  --ok: #17803d;
+  --warn: #b45309;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 2rem 1rem 4rem;
+  background: var(--bg);
+  color: var(--ink);
+  font: 16px/1.6 "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+}
+
+main { max-width: 640px; margin: 0 auto; }
+
+h1 { font-size: 1.6rem; margin: 0 0 .25rem; }
+h2 { font-size: 1.05rem; margin: 2rem 0 .75rem; }
+h3 { font-size: 1.05rem; margin: 0; }
+
+.sub { color: var(--muted); font-size: .9rem; margin: .25rem 0 0; }
+.note { color: var(--muted); font-size: .8rem; margin-top: 2rem; }
+
+label { display: block; margin-bottom: 1rem; }
+label span { display: block; font-size: .875rem; margin-bottom: .35rem; }
+
+input, select {
+  width: 100%;
+  padding: .6rem .7rem;
+  font: inherit;
+  color: inherit;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+input:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+button {
+  width: 100%;
+  padding: .75rem;
+  font: inherit;
+  font-weight: 600;
+  color: #fff;
+  background: var(--accent);
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+button:disabled { opacity: .55; cursor: default; }
+
+.error {
+  padding: .75rem 1rem;
+  margin-bottom: 1rem;
+  background: #fdecec;
+  border: 1px solid #f5c2c2;
+  border-radius: 8px;
+  font-size: .9rem;
+}
+
+.totals {
+  display: flex;
+  gap: 2rem;
+  padding: 1.25rem 1.5rem;
+  margin: 1.5rem 0;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.totals strong { display: block; font-size: 1.9rem; color: var(--accent); }
+.totals span { font-size: .85rem; color: var(--muted); }
+
+.derived { list-style: none; padding: 0; margin: 0; }
+.derived li {
+  display: flex; justify-content: space-between;
+  padding: .5rem 0; border-bottom: 1px solid var(--line);
+  font-size: .9rem;
+}
+
+.card {
+  padding: 1rem 1.25rem;
+  margin-bottom: .875rem;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--line);
+  border-radius: 10px;
+}
+.card.qualified { border-left-color: var(--ok); }
+.card.needs_verification { border-left-color: var(--warn); }
+.card.excluded { opacity: .7; }
+
+.card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+.amount { font-weight: 700; white-space: nowrap; }
+
+.explanation { font-size: .9rem; margin: .6rem 0 0; }
+
+.reasons { margin: .6rem 0 0; padding-left: 1.1rem; font-size: .875rem; color: var(--muted); }
+
+/* Conditions that can only raise the payment. Flagged, not asked about. */
+.caveats {
+  margin: .6rem 0 0; padding: .5rem .75rem .5rem 1.6rem;
+  font-size: .8rem; color: var(--warn);
+  background: color-mix(in srgb, var(--warn) 8%, transparent);
+  border-radius: 6px;
+}
+
+details { margin-top: .75rem; font-size: .875rem; }
+summary { cursor: pointer; color: var(--muted); }
+
+.card footer {
+  display: flex; flex-wrap: wrap; gap: .75rem; align-items: center;
+  margin-top: .875rem; padding-top: .625rem;
+  border-top: 1px solid var(--line);
+  font-size: .75rem; color: var(--muted);
+}
+.ref.missing, .warn { color: var(--warn); }
+a { color: var(--accent); }
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #16181c; --card: #1e2126; --ink: #e8eaed;
+    --muted: #9aa1ab; --line: #2c3037; --accent: #ff5c6c;
+  }
+  .error { background: #3a1f22; border-color: #5d2d33; }
+}

@@ -1,0 +1,241 @@
+{
+  "_comment": [
+    "FROZEN. The households typed in front of judges, plus the cases that",
+    "protect them.",
+    "",
+    "Expected amounts now come from a 3-pass extraction whose passes agreed and",
+    "whose table is internally consistent. That is much better than the single",
+    "unreviewed answer these were first written against -- but it is still not",
+    "someone reading the PDF. verified: false until it is."
+  ],
+  "profiles": [
+    {
+      "id": "chaoyang_family_of_3",
+      "why": "The stage demo. 人均 ¥3,800 -> 第六档, 3人及以上, 全市 -> ¥1,200.",
+      "profile": {
+        "hukou_type": "bj_urban",
+        "household_size": 3,
+        "household_monthly_income": 11400,
+        "household_assets": 500000,
+        "owns_property": false,
+        "district": "朝阳区",
+        "monthly_rent": 3000,
+        "welfare_status": "none"
+      },
+      "expect": {
+        "qualified": ["bj_housing_market_rent_subsidy"],
+        "amounts": { "bj_housing_market_rent_subsidy": 1200 },
+        "totals": { "monthly": 1200, "one_time": 0 }
+      }
+    },
+    {
+      "id": "low_income_designated",
+      "why": [
+        "REGRESSION TEST for the error the RAG made unprompted. Same household,",
+        "but 民政-designated 城市低收入家庭 -> 第二档 -> ¥3,000, not the ¥1,200",
+        "its raw income would suggest. The original Bailian answer put a family",
+        "described as 低收入 in 第六档 and understated by ¥1,800/month."
+      ],
+      "profile": {
+        "hukou_type": "bj_urban",
+        "household_size": 3,
+        "household_monthly_income": 11400,
+        "household_assets": 500000,
+        "owns_property": false,
+        "district": "朝阳区",
+        "monthly_rent": 4000,
+        "welfare_status": "low_income"
+      },
+      "expect": {
+        "qualified": ["bj_housing_market_rent_subsidy"],
+        "amounts": { "bj_housing_market_rent_subsidy": 3000 },
+        "totals": { "monthly": 3000, "one_time": 0 }
+      }
+    },
+    {
+      "id": "four_person_asset_limit",
+      "why": [
+        "REGRESSION TEST for the dual bucketing. 4 people with ¥700,000 in",
+        "assets qualify (4人及以上 limit is ¥760,000). The earlier draft applied",
+        "the ¥570,000 limit to everyone with 3+ people and would have excluded",
+        "them. Note the amount uses the 3+ bucket while the asset check uses the",
+        ">=4 bucket -- different splits, same household."
+      ],
+      "profile": {
+        "hukou_type": "bj_urban",
+        "household_size": 4,
+        "household_monthly_income": 10000,
+        "household_assets": 700000,
+        "owns_property": false,
+        "district": "海淀区",
+        "monthly_rent": 5000,
+        "welfare_status": "none"
+      },
+      "expect": {
+        "qualified": ["bj_housing_market_rent_subsidy"],
+        "amounts": { "bj_housing_market_rent_subsidy": 2500 },
+        "totals": { "monthly": 2500, "one_time": 0 }
+      }
+    },
+    {
+      "id": "outer_district_discount",
+      "why": "怀柔区 pays 60% of the standard rate. 第三档, 3人及以上: ¥2,500 -> ¥1,500.",
+      "profile": {
+        "hukou_type": "bj_urban",
+        "household_size": 3,
+        "household_monthly_income": 7500,
+        "household_assets": 300000,
+        "owns_property": false,
+        "district": "怀柔区",
+        "monthly_rent": 2000,
+        "welfare_status": "none"
+      },
+      "expect": {
+        "qualified": ["bj_housing_market_rent_subsidy"],
+        "amounts": { "bj_housing_market_rent_subsidy": 1500 },
+        "totals": { "monthly": 1500, "one_time": 0 }
+      }
+    },
+    {
+      "id": "cheap_rent_cap_binds",
+      "why": "Rent below the entitlement. The cap must reduce the payment to the rent.",
+      "profile": {
+        "hukou_type": "bj_urban",
+        "household_size": 3,
+        "household_monthly_income": 11400,
+        "household_assets": 500000,
+        "owns_property": false,
+        "district": "朝阳区",
+        "monthly_rent": 800,
+        "welfare_status": "none"
+      },
+      "expect": {
+        "qualified": ["bj_housing_market_rent_subsidy"],
+        "amounts": { "bj_housing_market_rent_subsidy": 800 },
+        "totals": { "monthly": 800, "one_time": 0 }
+      }
+    },
+    {
+      "id": "genuinely_low_income",
+      "why": [
+        "Was needs_verification when only 第六档 had been extracted. Now the",
+        "full table exists: 人均 ¥1,500 -> 第三档, 3人及以上, 全市 -> ¥2,500.",
+        "The change in this expectation is the signal that the data gap closed."
+      ],
+      "profile": {
+        "hukou_type": "bj_urban",
+        "household_size": 3,
+        "household_monthly_income": 4500,
+        "household_assets": 120000,
+        "owns_property": false,
+        "district": "朝阳区",
+        "monthly_rent": 3000,
+        "welfare_status": "none"
+      },
+      "expect": {
+        "qualified": ["bj_housing_market_rent_subsidy"],
+        "amounts": { "bj_housing_market_rent_subsidy": 2500 },
+        "totals": { "monthly": 2500, "one_time": 0 }
+      }
+    },
+    {
+      "id": "welfare_status_unknown",
+      "why": [
+        "The safety property, on the field that matters most. Without 民政",
+        "status we cannot tell 第二档 from 第六档 -- ¥3,000 from ¥1,200 -- so we",
+        "ask rather than assume. Guessing 'none' would understate by ¥1,800."
+      ],
+      "profile": {
+        "hukou_type": "bj_urban",
+        "household_size": 3,
+        "household_monthly_income": 11400,
+        "household_assets": 500000,
+        "owns_property": false,
+        "district": "朝阳区",
+        "monthly_rent": 3000
+      },
+      "expect": {
+        "qualified": [],
+        "needs_verification": ["bj_housing_market_rent_subsidy"],
+        "unresolved_includes": ["welfare_status"],
+        "totals": { "monthly": 0, "one_time": 0 }
+      }
+    },
+    {
+      "id": "assets_unknown",
+      "why": "Unknown must never read as qualified.",
+      "profile": {
+        "hukou_type": "bj_urban",
+        "household_size": 3,
+        "household_monthly_income": 11400,
+        "owns_property": false,
+        "district": "朝阳区",
+        "monthly_rent": 3000,
+        "welfare_status": "none"
+      },
+      "expect": {
+        "qualified": [],
+        "needs_verification": ["bj_housing_market_rent_subsidy"],
+        "unresolved_includes": ["household_assets"],
+        "totals": { "monthly": 0, "one_time": 0 }
+      }
+    },
+    {
+      "id": "owns_property",
+      "why": "A checked condition fails. Definite no, not a maybe.",
+      "profile": {
+        "hukou_type": "bj_urban",
+        "household_size": 3,
+        "household_monthly_income": 11400,
+        "household_assets": 500000,
+        "owns_property": true,
+        "district": "朝阳区",
+        "monthly_rent": 3000,
+        "welfare_status": "none"
+      },
+      "expect": {
+        "qualified": [],
+        "excluded": ["bj_housing_market_rent_subsidy"],
+        "totals": { "monthly": 0, "one_time": 0 }
+      }
+    },
+    {
+      "id": "over_income_ceiling",
+      "why": "人均 ¥5,000 exceeds the ¥4,200 ceiling. Excluded, and no band would match anyway.",
+      "profile": {
+        "hukou_type": "bj_urban",
+        "household_size": 3,
+        "household_monthly_income": 15000,
+        "household_assets": 300000,
+        "owns_property": false,
+        "district": "朝阳区",
+        "monthly_rent": 3000,
+        "welfare_status": "none"
+      },
+      "expect": {
+        "qualified": [],
+        "excluded": ["bj_housing_market_rent_subsidy"],
+        "totals": { "monthly": 0, "one_time": 0 }
+      }
+    },
+    {
+      "id": "non_beijing_hukou",
+      "why": "Out of scope for this program. Checked and failed.",
+      "profile": {
+        "hukou_type": "non_bj",
+        "household_size": 3,
+        "household_monthly_income": 11400,
+        "household_assets": 500000,
+        "owns_property": false,
+        "district": "朝阳区",
+        "monthly_rent": 3000,
+        "welfare_status": "none"
+      },
+      "expect": {
+        "qualified": [],
+        "excluded": ["bj_housing_market_rent_subsidy"],
+        "totals": { "monthly": 0, "one_time": 0 }
+      }
+    }
+  ]
+}
