@@ -8,30 +8,37 @@
 </head>
 <body>
   <main>
-    <header>
+    <header class="hero">
+      <p class="eyebrow">第三步</p>
       <h1>查询结果</h1>
+      <p class="sub">以下为规则计算结果，金额与资格由系统自动判定。</p>
+      <ol class="steps" aria-label="查询步骤">
+        <li class="done">填写基础信息</li>
+        <li class="done">补充必要信息</li>
+        <li class="active">查看匹配结果</li>
+      </ol>
     </header>
 
-    <section class="totals" id="totals"></section>
+    <section class="totals panel" id="totals"></section>
 
-    <section id="qualified-section" hidden>
+    <section id="qualified-section" class="panel" hidden>
       <h2>符合条件</h2>
       <div id="qualified"></div>
     </section>
 
-    <section id="alternatives-section" hidden>
+    <section id="alternatives-section" class="panel" hidden>
       <h2>可替代选择</h2>
       <p class="sub">同类补贴不可同时享受。以下项目您也符合条件，可与上方项目二选一。</p>
       <div id="alternatives"></div>
     </section>
 
-    <section id="verify-section" hidden>
+    <section id="verify-section" class="panel" hidden>
       <h2>需进一步核验</h2>
       <p class="sub">以下项目缺少判断所需信息，或政策条款需人工确认。</p>
       <div id="needs_verification"></div>
     </section>
 
-    <section id="excluded-section" hidden>
+    <section id="excluded-section" class="panel" hidden>
       <h2>暂不符合</h2>
       <div id="excluded"></div>
     </section>
@@ -40,7 +47,7 @@
       本结果由政策规则自动匹配生成，仅供参考，不构成申请承诺。
       最终资格与金额以各主管部门审核结果为准。
     </p>
-    <p><a href="index.html">重新查询</a></p>
+    <p><a class="back-link" href="index.html">重新查询</a></p>
   </main>
 
   <script>
@@ -56,11 +63,18 @@
     const figures = [];
     // Monthly and one-time are shown as separate figures. Adding ¥/月 to a
     // one-off payment would produce a number that doesn't mean anything.
-    if (totals.monthly) figures.push(`<div><strong>¥${totals.monthly.toLocaleString("zh-CN")}</strong><span>每月</span></div>`);
-    if (totals.one_time) figures.push(`<div><strong>¥${totals.one_time.toLocaleString("zh-CN")}</strong><span>一次性</span></div>`);
+    if (totals.monthly) figures.push(`<div class="total-item"><strong>¥${totals.monthly.toLocaleString("zh-CN")}</strong><span>每月可领</span></div>`);
+    if (totals.one_time) figures.push(`<div class="total-item"><strong>¥${totals.one_time.toLocaleString("zh-CN")}</strong><span>一次性</span></div>`);
     document.getElementById("totals").innerHTML = figures.length
       ? figures.join("")
-      : `<div><strong>—</strong><span>暂无可直接确认的补贴</span></div>`;
+      : `<div class="total-item"><strong>—</strong><span>暂无可直接确认的补贴</span></div>`;
+
+    const STATUS_TEXT = {
+      qualified: "符合条件",
+      alternatives: "可替代",
+      needs_verification: "需核验",
+      excluded: "暂不符合",
+    };
 
     function card(result) {
       const reasons = [];
@@ -84,7 +98,10 @@
         <article class="card ${result.status}">
           <div class="card-head">
             <h3>${result.name}</h3>
-            <div class="amount">${money(result.amount, result.cadence)}</div>
+            <div class="card-meta">
+              <span class="status-badge ${result.status}">${STATUS_TEXT[result.status] || "结果"}</span>
+              <div class="amount">${money(result.amount, result.cadence)}</div>
+            </div>
           </div>
           ${result.superseded_by ? `<p class="sub">与已选项目不可同时享受</p>` : ""}
           ${result.explanation ? `<p class="explanation">${result.explanation}</p>` : ""}
