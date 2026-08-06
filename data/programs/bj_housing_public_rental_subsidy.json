@@ -1,0 +1,169 @@
+{
+  "_comment": [
+    "DRAFT -- verified: false, confidence: low. Written on 2026-08-06 from a",
+    "SINGLE Bailian RAG pass, not from a multi-pass extraction and not from a",
+    "human reading the PDF. It exists so the pipeline can be exercised end to",
+    "end before review, not because anyone has checked it.",
+    "",
+    "The amount is NOT computable by this system and that is deliberate, not a",
+    "gap to be filled in later with a guess. The policy is a formula:",
+    "  公租房租金补贴 = 公租房租金标准 x 补贴比例 x 补贴面积",
+    "补贴比例 we have (see subsidy_ratio_tier below -- it is a real table and it",
+    "resolves). 公租房租金标准 is per-project and market-linked; 补贴面积 is the",
+    "lesser of actual floor area and 60 sqm. Neither is anything a household can",
+    "be asked on an intake form, and benefit.amount only supports fixed values",
+    "and table lookups -- there is no multiply. So benefit.amount names the two",
+    "inputs it lacks and returns nothing, which routes the program to",
+    "needs_verification with a card that has no number on it. That is the honest",
+    "outcome. A card with an invented number would not be.",
+    "",
+    "subsidy_ratio_tier is therefore currently dead weight at runtime. It is",
+    "kept because the ratios are the part of this policy we actually retrieved,",
+    "and deleting them would mean re-extracting them the day the formula lands.",
+    "",
+    "owns_property == false is an APPROXIMATION of 除承租的公租房外无其他住房.",
+    "A household living in a 公租房 unit does not own it, so the profile field",
+    "reads false for exactly the people this program is for -- but the field",
+    "cannot distinguish 'owns nothing' from 'owns nothing except the 公租房',",
+    "and the policy's condition is the latter. Flagged for review.",
+    "",
+    "The 怀柔/平谷/密云/延庆 case is worse here than in 市场租房补贴: those four",
+    "districts set their own income bands and ratios by 区政府 decision, so the",
+    "table below is simply wrong for them rather than scaled. Handled as a",
+    "manual_review clause, not as a district_group multiplier."
+  ],
+
+  "program_id": "bj_housing_public_rental_subsidy",
+  "name": "公共租赁住房租金补贴",
+  "domain": "housing",
+  "agency": "北京市住房和城乡建设委员会",
+  "document_refs": [],
+  "source_url": "https://zjw.beijing.gov.cn/bjjs/xxgk/zcwj2024/gfxwj40/xxyx/543339231/index.shtml",
+
+  "required_attributes": [
+    "hukou_type",
+    "household_size",
+    "household_monthly_income",
+    "household_assets",
+    "owns_property",
+    "district",
+    "welfare_status"
+  ],
+
+  "key_definitions": {
+    "subsidy_ratio_tier": {
+      "kind": "range_lookup",
+      "attr": "per_capita_monthly_income",
+      "overrides": [
+        { "attr": "welfare_status", "equals": "dibao", "value": 95 },
+        { "attr": "welfare_status", "equals": "tekun", "value": 95 },
+        { "attr": "welfare_status", "equals": "low_income", "value": 90 }
+      ],
+      "bands": [
+        { "value": 70, "max": 1200 },
+        { "value": 50, "min": 1200, "max": 1600 },
+        { "value": 25, "min": 1600, "max": 2000 },
+        { "value": 10, "min": 2000, "max": 2400 }
+      ]
+    },
+    "asset_size_bucket": {
+      "kind": "range_lookup",
+      "attr": "household_size",
+      "bands": [
+        { "value": "<=3", "max": 3 },
+        { "value": ">=4", "min": 4 }
+      ]
+    },
+    "district_group": {
+      "kind": "set_lookup",
+      "attr": "district",
+      "groups": {
+        "outer": ["怀柔区", "平谷区", "密云区", "延庆区"]
+      },
+      "default": "standard"
+    }
+  },
+
+  "eligibility": {
+    "all_of": [
+      {
+        "attr": "hukou_type",
+        "op": "in",
+        "value": ["bj_urban"],
+        "note": "北京市城镇户籍家庭"
+      },
+      {
+        "attr": "per_capita_monthly_income",
+        "op": "<=",
+        "value": 2400,
+        "note": "申请当月前12个月家庭人均月收入不高于 2400 元"
+      },
+      {
+        "attr": "owns_property",
+        "op": "==",
+        "value": false,
+        "note": "除承租的公租房外，在本市无其他住房"
+      },
+      {
+        "attr": "household_assets",
+        "op": "<=",
+        "value": {
+          "kind": "table",
+          "keys": ["asset_size_bucket"],
+          "rows": [
+            { "asset_size_bucket": "<=3", "value": 570000 },
+            { "asset_size_bucket": ">=4", "value": 760000 }
+          ]
+        },
+        "note": "3人及以下家庭总资产净值不高于 57 万元；4人及以上不高于 76 万元"
+      },
+      {
+        "op": "manual_review",
+        "clause": "所承租的公租房须通过市、区住房保障管理部门公开配租方式获得。本工具无法核实配租方式，请向街道住房保障管理部门确认。"
+      },
+      {
+        "op": "manual_review",
+        "clause": "怀柔、平谷、密云、延庆四区的收入分档线与补贴比例由区人民政府自行确定，与本表不同。若居住在上述四区，请以区级标准为准。"
+      }
+    ]
+  },
+
+  "benefit": {
+    "cadence": "monthly",
+    "amount": {
+      "kind": "table",
+      "keys": ["public_rental_rent_standard", "subsidized_area"],
+      "rows": []
+    },
+    "duration": {
+      "kind": "ongoing_conditional",
+      "review": "按月发放，自租赁期限开始之日的次月起，需持续满足资格条件并按时交纳租金"
+    }
+  },
+
+  "benefit_caveats": [
+    "补贴计算公式为：公租房租金补贴 = 公租房租金标准 × 补贴比例 × 补贴面积。",
+    "补贴面积上限为建筑面积 60 平方米；承租面积超过上限的按 60 平方米计算，低于上限的按实际面积计算。",
+    "分档补贴比例：低保家庭及特困人员 95%，城市低收入家庭 90%，人均月收入 1200 元及以下 70%，1200（不含）至 1600 元 50%，1600（不含）至 2000 元 25%，2000（不含）至 2400 元 10%。",
+    "家庭成员中有重度残疾人员、患大病人员，或家庭成员均为 60 周岁以上老人且无子女的，原补贴比例低于 95% 时可提高一档。"
+  ],
+
+  "exclusivity_group": "bj_housing",
+
+  "claim_steps": [
+    "自公共租赁住房租赁期限开始之日起，到户籍所在地街道办事处（乡镇人民政府）住房保障管理部门办理租金补贴领取手续",
+    "由街道办事处（乡镇人民政府）住房保障管理部门核对材料并打印《北京市公共租赁住房租金补贴信息确认单》，申请人签字确认",
+    "区住房保障管理部门在 5 个工作日内复核",
+    "复核通过后送达《北京市公共租赁住房租金补贴发放通知单》，自租赁期限开始之日的次月起按月发放"
+  ],
+  "required_documents": [
+    "户名为本人的租金代扣银行卡及复印件",
+    "身份证件",
+    "公共租赁住房租赁合同",
+    "《北京市公共租赁住房租金补贴资格通知单》"
+  ],
+
+  "confidence": "low",
+  "verified": false,
+  "notes": "单次 RAG 抽取草稿，未经多轮交叉验证，未经人工核对原文。补贴金额依赖公租房租金标准与补贴面积，本系统不计算，结果卡片不显示金额。exclusivity_group 与 bj_housing_market_rent_subsidy 配对，但两者互斥的条款尚未在原文中检索到（仅检索到与廉租住房的互斥条款），互斥关系仍为人工假设。"
+}

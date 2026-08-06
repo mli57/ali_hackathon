@@ -5,6 +5,10 @@
 // the API response. The frontend never computes an amount and never reads one
 // out of the model's prose.
 
+// The only place the API port is written down. It used to be hardcoded to 8003
+// in four <script> blocks across three pages while SETUP.md said 8000, so
+// following the setup instructions produced a form that submitted into nothing.
+// To point somewhere else, set window.API_BASE before this file loads.
 const API = window.API_BASE || "http://127.0.0.1:8000";
 
 // How to ask for each attribute the backend might request as a follow-up.
@@ -46,14 +50,39 @@ const FIELDS = {
       ["low_income", "城市低收入家庭"],
     ],
   },
-  employment_status: { label: "就业状态", type: "text" },
-  children_ages: { label: "子女年龄（用逗号分隔）", type: "text" },
+  employment_status: {
+    label: "就业状态",
+    type: "select",
+    options: [
+      ["employed", "用人单位在职职工"],
+      ["flexible", "灵活就业（个体经营、非全日制、新就业形态）"],
+      ["self_employed_founder", "创办企业或个体，任法定代表人／主要负责人"],
+      ["unemployed", "登记失业"],
+      ["student", "在校学生"],
+      ["retired", "已退休"],
+      ["other", "以上均否"],
+    ],
+  },
+  // Optional because 育儿补贴 makes /profile/confirm ask this of everyone, and
+  // a household with no children has no answer to give. Left blank the attribute
+  // simply isn't sent, and the program lands in needs_verification -- which is
+  // the truth ("we don't know"), and is better than a form nobody can submit.
+  children_ages: {
+    label: "子女年龄（周岁，多个用逗号分隔；无子女请留空）",
+    type: "text",
+    optional: true,
+  },
 };
 
 const DERIVED_LABELS = {
   per_capita_monthly_income: "家庭人均月收入",
   per_capita_household_assets: "家庭人均资产",
   num_children: "子女数量",
+  // Derived attributes can also come back in unresolved_attributes -- 育儿补贴
+  // reads youngest_child_age, which is derived from children_ages and so has no
+  // FIELDS entry. Without a label here the card prints the raw attribute name.
+  youngest_child_age: "最小子女年龄",
+  oldest_child_age: "最大子女年龄",
 };
 
 const store = {
@@ -96,6 +125,7 @@ function renderField(name, current) {
   const field = FIELDS[name];
   if (!field) return "";
   const value = current === undefined || current === null ? "" : String(current);
+  const required = field.optional ? "" : " required";
 
   let input;
   if (field.type === "select") {
@@ -105,11 +135,11 @@ function renderField(name, current) {
           `<option value="${v}"${v === value ? " selected" : ""}>${label}</option>`
       )
       .join("");
-    input = `<select name="${name}" required><option value="">请选择</option>${options}</select>`;
+    input = `<select name="${name}"${required}><option value="">请选择</option>${options}</select>`;
   } else {
     const min = field.min !== undefined ? ` min="${field.min}"` : "";
     const max = field.max !== undefined ? ` max="${field.max}"` : "";
-    input = `<input type="${field.type}" name="${name}" value="${value}"${min}${max} required>`;
+    input = `<input type="${field.type}" name="${name}" value="${value}"${min}${max}${required}>`;
   }
 
   return `<label><span>${field.label}</span>${input}</label>`;

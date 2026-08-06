@@ -1,0 +1,22 @@
+# Python dependencies. Install with:
+#
+#     python -m pip install -r requirements.txt
+#
+# Versions are lower bounds pinned to what the project is developed against.
+# Nothing here is exotic; see AGENTS.md principle 2 before adding to this file.
+
+# --- API (backend/) ---
+fastapi>=0.115           # backend/main.py
+uvicorn>=0.30            # ASGI server, run as `python -m uvicorn`
+pydantic>=2.7            # backend/models.py -- every Rule and Profile
+httpx>=0.27              # backend/explain.py -- the Stage 3 Bailian call
+
+# --- Tests ---
+pytest>=8.0              # tests/
+
+# The frontend has no dependencies. It is three static files served by
+# `python -m http.server`; there is no build step and no package.json.
+#
+# scripts/extract.py shells out to the Bailian `bl` CLI, which is an npm
+# package rather than a Python one. See SETUP.md -- it is optional and not
+# needed to run the app or the tests.

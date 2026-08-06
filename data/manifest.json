@@ -36,22 +36,112 @@
     },
     {
       "program_id": "bj_housing_public_rental_subsidy",
-      "name": "公共租赁住房货币补贴",
+      "name": "公共租赁住房租金补贴",
       "domain": "housing",
       "agency": "北京市住房和城乡建设委员会",
       "document_refs": [],
-      "source_url": "",
-      "uploaded": false,
+      "_document_refs_todo": [
+        "UNFILLED. Retrieval returned 京建法〔2015〕14号 (《关于完善公共租赁住房",
+        "租金补贴政策的通知》) and 密政发〔2016〕36号 for the 密云 district variant.",
+        "Both came from the model, not from a human reading the PDF. Verify."
+      ],
+      "source_url": "https://zjw.beijing.gov.cn/bjjs/xxgk/zcwj2024/gfxwj40/xxyx/543339231/index.shtml",
+      "uploaded": true,
       "knowledge_base": "北京惠民补贴政策库",
-      "bailian_document": "",
+      "bailian_document": "TODO: the document name as it appears in the knowledge base",
       "uploaded_by": "",
-      "retrieved_on": "",
+      "retrieved_on": "2026-08-06",
       "_status": [
-        "NOT YET UPLOADED to the knowledge base. This is the other half of the",
-        "bj_housing exclusivity group -- until it exists, the aggregator's",
-        "conflict resolution is untested against real data.",
-        "Blocking task: find this policy document and upload it."
+        "Uploaded 2026-08-06. This is the other half of the bj_housing",
+        "exclusivity group, so the aggregator's conflict resolution now has a",
+        "second member -- but see the note in data/programs/: no clause barring",
+        "both subsidies at once has been found in the sources. The exclusivity",
+        "is still a hand assertion."
       ]
+    },
+    {
+      "program_id": "bj_childcare_national_subsidy",
+      "name": "育儿补贴",
+      "domain": "childcare",
+      "agency": "北京市卫生健康委员会",
+      "document_refs": [],
+      "_document_refs_todo": [
+        "UNFILLED. Retrieval named 京卫家庭〔2025〕14号 (《北京市育儿补贴制度实施",
+        "细则（试行）》) and the 中办国办《育儿补贴制度实施方案》. In one answer the",
+        "model attached the 中办国办 URL to the 实施细则 title -- the two were",
+        "crossed. Read both off the documents before recording either."
+      ],
+      "source_url": "https://www.beijing.gov.cn/zhengce/zhengcefagui/202507/t20250730_4161880.html",
+      "supplementary_urls": [
+        "https://wjw.beijing.gov.cn/zwgk_20040/zcwj2024/202511/t20251125_4304288.html",
+        "https://banshi.beijing.gov.cn/pubtask/bhyjs/yebt/yebtjd.html"
+      ],
+      "uploaded": true,
+      "knowledge_base": "北京惠民补贴政策库",
+      "bailian_document": "TODO: the document name as it appears in the knowledge base",
+      "uploaded_by": "",
+      "retrieved_on": "2026-08-06"
+    },
+    {
+      "program_id": "bj_childcare_maternity_allowance",
+      "name": "生育津贴",
+      "domain": "childcare",
+      "agency": "北京市医疗保障局",
+      "document_refs": [],
+      "_document_refs_todo": [
+        "UNFILLED, and likely to stay that way for a while. Everything retrieved",
+        "for this program is a 政策问答 / 新闻稿 / 政务名词 entry, not a 规范性",
+        "文件 with a 文号. The 2026 直发个人 change came from a 北京日报 piece.",
+        "Find the underlying 医保局 document before this program is shown to",
+        "anyone."
+      ],
+      "source_url": "https://ybj.beijing.gov.cn/2020_zwfw/2020_cjwt/202002/t20200217_1644118.html",
+      "uploaded": true,
+      "knowledge_base": "北京惠民补贴政策库",
+      "bailian_document": "TODO: the document name as it appears in the knowledge base",
+      "uploaded_by": "",
+      "retrieved_on": "2026-08-06"
+    },
+    {
+      "program_id": "bj_employment_flexible_insurance_subsidy",
+      "name": "灵活就业社会保险补贴",
+      "domain": "employment",
+      "agency": "北京市人力资源和社会保障局",
+      "document_refs": [],
+      "_document_refs_todo": [
+        "UNFILLED. Retrieval named 京人社评发〔2024〕13号 (《北京市灵活就业社会保险",
+        "补贴人员认定审核办法（试行）》). Note that document governs 人员认定 -- the",
+        "计发口径 (先缴后补、按险种补) came from a 政策问答 page and a 2024 news",
+        "item, so the amount rule may have a different source document."
+      ],
+      "source_url": "https://rsj.beijing.gov.cn/xxgk/2024zcwj/202410/t20241009_3914906.html",
+      "supplementary_urls": [
+        "https://rsj.beijing.gov.cn/fuwu/zxbs/202601/t20260104_4396682.html"
+      ],
+      "uploaded": true,
+      "knowledge_base": "北京惠民补贴政策库",
+      "bailian_document": "TODO: the document name as it appears in the knowledge base",
+      "uploaded_by": "",
+      "retrieved_on": "2026-08-06"
+    },
+    {
+      "program_id": "bj_employment_startup_subsidy",
+      "name": "一次性创业补贴",
+      "domain": "employment",
+      "agency": "北京市人力资源和社会保障局",
+      "document_refs": [],
+      "_document_refs_todo": [
+        "UNFILLED. Retrieval returned 京人社服发〔2020〕35号 consistently across two",
+        "separate queries, which is the strongest 文号 signal of any new program",
+        "here -- but consistency between passes of the same model is not a human",
+        "reading the document. Verify."
+      ],
+      "source_url": "https://rsj.beijing.gov.cn/xxgk/2024zcwj/202406/t20240617_3717147.html",
+      "uploaded": true,
+      "knowledge_base": "北京惠民补贴政策库",
+      "bailian_document": "TODO: the document name as it appears in the knowledge base",
+      "uploaded_by": "",
+      "retrieved_on": "2026-08-06"
     }
   ]
 }

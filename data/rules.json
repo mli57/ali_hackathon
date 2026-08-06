@@ -2,6 +2,317 @@
   "_generated": "by scripts/build_rules.py -- do not hand-edit",
   "programs": [
     {
+      "program_id": "bj_childcare_maternity_allowance",
+      "name": "生育津贴",
+      "domain": "childcare",
+      "agency": "北京市医疗保障局",
+      "document_refs": [],
+      "source_url": "https://ybj.beijing.gov.cn/2020_zwfw/2020_cjwt/202002/t20200217_1644118.html",
+      "required_attributes": [
+        "employment_status"
+      ],
+      "key_definitions": {},
+      "eligibility": {
+        "all_of": [
+          {
+            "attr": "employment_status",
+            "op": "in",
+            "value": [
+              "employed"
+            ],
+            "clause": null,
+            "note": "须为用人单位在职职工并已参加本市职工生育保险（机关事业单位、领取失业保险金人员另有规定）"
+          },
+          {
+            "attr": null,
+            "op": "manual_review",
+            "value": null,
+            "clause": "用人单位须已按规定为职工足额缴纳生育保险费。本工具无法核实参保缴费状态，请通过北京医保公共服务平台查询。",
+            "note": null
+          },
+          {
+            "attr": null,
+            "op": "manual_review",
+            "value": null,
+            "clause": "生育或实施计划生育手术须符合国家和本市计划生育规定。",
+            "note": null
+          }
+        ]
+      },
+      "benefit": {
+        "cadence": "one_time",
+        "amount": {
+          "kind": "table",
+          "keys": [
+            "employer_prior_year_avg_monthly_wage",
+            "maternity_leave_days"
+          ],
+          "rows": []
+        },
+        "caps": [],
+        "duration": {
+          "kind": "one_time",
+          "months": null,
+          "review": "按产假天数一次性计发"
+        }
+      },
+      "exclusivity_group": null,
+      "claim_steps": [
+        "线上：通过北京医保公共服务平台、北京医保微信公众号或京通小程序提交申请",
+        "线下：由用人单位到医保经办机构提交材料，领取《北京市申领生育津贴待遇核准表》并签字确认",
+        "参保单位在北京医保公共服务平台审批并核对职工银行账户信息",
+        "选择银行代发的，于申领次月中旬到账"
+      ],
+      "required_documents": [
+        "《北京市申领生育津贴人员信息登记表》",
+        "医疗机构出具的《医学诊断证明书》原件及复印件",
+        "婴儿《出生医学证明》原件及复印件",
+        "《北京市生育服务证》或《生育登记服务单》（北京户籍）／《北京市外地来京人员生育服务联系单》（非京户籍）"
+      ],
+      "benefit_caveats": [
+        "生育津贴计算公式为：用人单位上年度职工月平均工资 ÷ 30 × 产假天数。金额取决于单位工资水平与产假天数，本工具不计算。",
+        "生育津贴高于本人产假工资标准的，用人单位不得克扣；低于本人产假工资标准的，差额部分由用人单位补足。",
+        "自 2026 年 1 月 31 日起（以分娩或手术日为准），企业女职工生育津贴直接发放至个人账户；机关事业单位及领取失业保险金人员发放方式不变。",
+        "在本市定点医疗机构分娩的，与参保单位共同完成信息确认后自动发起申领，无需另行提交材料。"
+      ],
+      "confidence": "low",
+      "notes": "单次 RAG 抽取草稿。金额不可计算，永远进入 needs_verification。检索到的政务名词条目更新于 2018 年，2026 年直发个人的新规来自新闻稿而非规范性文件，须人工核对现行文件后再提高 confidence。",
+      "verified": false
+    },
+    {
+      "program_id": "bj_childcare_national_subsidy",
+      "name": "育儿补贴",
+      "domain": "childcare",
+      "agency": "北京市卫生健康委员会",
+      "document_refs": [],
+      "source_url": "https://www.beijing.gov.cn/zhengce/zhengcefagui/202507/t20250730_4161880.html",
+      "required_attributes": [
+        "hukou_type",
+        "children_ages"
+      ],
+      "key_definitions": {},
+      "eligibility": {
+        "all_of": [
+          {
+            "attr": "hukou_type",
+            "op": "in",
+            "value": [
+              "bj_urban",
+              "bj_rural"
+            ],
+            "clause": null,
+            "note": "婴幼儿须具有北京市户籍（户籍迁入本市的 3 周岁以下婴幼儿自落户日起可申领）"
+          },
+          {
+            "attr": "youngest_child_age",
+            "op": "<",
+            "value": 3,
+            "clause": null,
+            "note": "补贴发放至婴幼儿年满 3 周岁止"
+          }
+        ]
+      },
+      "benefit": {
+        "cadence": "one_time",
+        "amount": {
+          "kind": "fixed",
+          "value": 3600.0
+        },
+        "caps": [],
+        "duration": {
+          "kind": "fixed_months",
+          "months": 12,
+          "review": "每孩每年 3600 元，按年申领，发放至年满 3 周岁止"
+        }
+      },
+      "exclusivity_group": null,
+      "claim_steps": [
+        "以家庭为单位，由 1 名申领人（婴幼儿父母一方或法定监护人）提出申请",
+        "通过京通小程序 / 北京市政务服务网“育儿补贴申领一件事”线上提交，或到属地卫生健康部门线下办理",
+        "审核通过后由财政发放至申领人账户",
+        "次年按规定续领，直至婴幼儿年满 3 周岁"
+      ],
+      "required_documents": [
+        "婴幼儿出生医学证明",
+        "居民户口簿",
+        "申领人身份证件",
+        "证明抚养关系的法定有效文件（收养、监护等情形适用）"
+      ],
+      "benefit_caveats": [
+        "国家基础标准为每孩每年 3600 元，按年发放，直至婴幼儿年满 3 周岁。上方金额为一个孩子一年的补贴，不是全部。",
+        "多孩家庭按孩数分别计算：两名 3 周岁以下婴幼儿即为每年 7200 元。本工具暂未按孩数累加。",
+        "2022—2024 年出生的婴幼儿按应补贴月数折算金额，首次申请截止时间已延长至 2026 年 12 月 31 日。",
+        "2025 年 1 月 1 日及以后出生的婴幼儿，须在出生当年或次年提出首次申请，并在后续连续两年内续领。"
+      ],
+      "confidence": "low",
+      "notes": "单次 RAG 抽取草稿。cadence 与按孩数累加两处均为已知偏差，见文件顶部注释。文号（京卫家庭〔2025〕14号）与中办国办实施方案的引用在检索结果中出现过串接，须人工核对后录入 manifest。",
+      "verified": false
+    },
+    {
+      "program_id": "bj_employment_flexible_insurance_subsidy",
+      "name": "灵活就业社会保险补贴",
+      "domain": "employment",
+      "agency": "北京市人力资源和社会保障局",
+      "document_refs": [],
+      "source_url": "https://rsj.beijing.gov.cn/xxgk/2024zcwj/202410/t20241009_3914906.html",
+      "required_attributes": [
+        "employment_status"
+      ],
+      "key_definitions": {},
+      "eligibility": {
+        "all_of": [
+          {
+            "attr": "employment_status",
+            "op": "in",
+            "value": [
+              "flexible"
+            ],
+            "clause": null,
+            "note": "须实现灵活就业（个体经营、非全日制或新就业形态），并以灵活就业人员身份申报缴纳社会保险费"
+          },
+          {
+            "attr": null,
+            "op": "manual_review",
+            "value": null,
+            "clause": "须属于下列三类人员之一：经认定的本市就业困难人员、离校 2 年内未就业的高校毕业生、登记失业的初次进京随军家属。本工具无法核实认定状态，请向街道（乡镇）公共就业服务机构确认。",
+            "note": null
+          },
+          {
+            "attr": null,
+            "op": "manual_review",
+            "value": null,
+            "clause": "须已办理个人就业登记满 30 日及以上，并通过劳动取得劳动报酬或经营收入。",
+            "note": null
+          }
+        ]
+      },
+      "benefit": {
+        "cadence": "monthly",
+        "amount": {
+          "kind": "table",
+          "keys": [
+            "actual_monthly_social_insurance_paid"
+          ],
+          "rows": []
+        },
+        "caps": [],
+        "duration": {
+          "kind": "ongoing_conditional",
+          "months": null,
+          "review": "本市就业困难人员最长 3 年，距法定退休年龄不足 5 年的可延长至退休；离校 2 年内未就业高校毕业生最长 2 年；初次进京随军家属最长 3 年"
+        }
+      },
+      "exclusivity_group": null,
+      "claim_steps": [
+        "先行以灵活就业人员身份缴纳社会保险费（先缴后补）",
+        "向街道（乡镇）公共就业服务机构提出认定申请",
+        "经审核认定后，自申请之月的次月起按月享受补贴",
+        "以税务部门反馈的实际缴费数据核发"
+      ],
+      "required_documents": [
+        "身份证件",
+        "个人就业登记记录",
+        "就业困难人员认定材料 / 高校毕业证书 / 随军家属证明（按适用类别）",
+        "灵活就业社会保险费缴费凭证"
+      ],
+      "benefit_caveats": [
+        "补贴金额按个人实际缴纳的职工基本养老保险费、失业保险费、职工基本医疗保险费分别计算，遵循“先缴后补、按险种补、不缴不补”，补贴金额不超过实际缴费额。",
+        "举例（非标准，仅供参考）：按本市最低缴费标准同时缴纳三个险种时月缴费约 1882.02 元，就业困难人员可申领约 1254.68 元/月，个人实际承担约 627.34 元/月。实际金额随缴费基数与险种组合变化。",
+        "补贴自申请之月的次月起享受，以税务部门反馈的缴费数据为准。",
+        "出现下列情形之一停止发放：与用人单位建立劳动关系、停止灵活就业、达到法定退休年龄或开始领取养老保险待遇。"
+      ],
+      "confidence": "low",
+      "notes": "单次 RAG 抽取草稿。补贴金额按实际缴费额逐险种计算，本系统不计算，永远进入 needs_verification。京人社评发〔2024〕13号 为认定审核办法，补贴计发口径来自政策问答与新闻稿，须人工核对原文。",
+      "verified": false
+    },
+    {
+      "program_id": "bj_employment_startup_subsidy",
+      "name": "一次性创业补贴",
+      "domain": "employment",
+      "agency": "北京市人力资源和社会保障局",
+      "document_refs": [],
+      "source_url": "https://rsj.beijing.gov.cn/xxgk/2024zcwj/202406/t20240617_3717147.html",
+      "required_attributes": [
+        "employment_status"
+      ],
+      "key_definitions": {},
+      "eligibility": {
+        "all_of": [
+          {
+            "attr": "employment_status",
+            "op": "in",
+            "value": [
+              "self_employed_founder"
+            ],
+            "clause": null,
+            "note": "须为创业组织的法定代表人或主要负责人"
+          },
+          {
+            "attr": null,
+            "op": "manual_review",
+            "value": null,
+            "clause": "须在本市首次创办创业组织并担任法定代表人或主要负责人。“首次”以本市登记记录为准，本工具无法核实。",
+            "note": null
+          },
+          {
+            "attr": null,
+            "op": "manual_review",
+            "value": null,
+            "clause": "创业人员须在所创办的创业组织缴纳社会保险费累计满 6 个月；入乡创业人员须招用本市户籍劳动力 3 名并为其缴纳社保满 6 个月。",
+            "note": null
+          },
+          {
+            "attr": null,
+            "op": "manual_review",
+            "value": null,
+            "clause": "创业组织须自登记注册之日起正常经营且依法纳税 1 年以上。",
+            "note": null
+          },
+          {
+            "attr": null,
+            "op": "manual_review",
+            "value": null,
+            "clause": "创业人员及创业组织信用良好，未被列入北京市公共信用信息服务平台“黑名单”。",
+            "note": null
+          }
+        ]
+      },
+      "benefit": {
+        "cadence": "one_time",
+        "amount": {
+          "kind": "fixed",
+          "value": 8000.0
+        },
+        "caps": [],
+        "duration": {
+          "kind": "one_time",
+          "months": null,
+          "review": "一次性发放"
+        }
+      },
+      "exclusivity_group": null,
+      "claim_steps": [
+        "创业组织登记注册并正常经营、依法纳税满 1 年",
+        "创业人员在本创业组织缴纳社会保险费累计满 6 个月",
+        "向创业组织注册地的区人力资源和社会保障部门提出申请",
+        "经审核公示后一次性发放"
+      ],
+      "required_documents": [
+        "营业执照或登记注册证明",
+        "法定代表人或主要负责人身份证明",
+        "创业人员及所招用人员的社会保险缴费记录",
+        "纳税证明"
+      ],
+      "benefit_caveats": [
+        "基础补贴为 8000 元。每招用 1 名本市户籍劳动力并为其缴纳社保满 6 个月，加发 1000 元（入乡创业在招用 3 名的基础上每多 1 名加发）。",
+        "每个创业组织补贴总额不超过 1 万元。上方金额为基础补贴，未计入加发部分，实际可能更高。",
+        "入乡创业人员创办的创业组织正常经营 6 个月以上的，可先行申领补贴资金的 50%。"
+      ],
+      "confidence": "low",
+      "notes": "单次 RAG 抽取草稿。京人社服发〔2020〕35号 在两次检索中一致出现，但仍需人工核对原文后录入 manifest。金额仅编码基础档 8000 元，加发部分见 benefit_caveats。",
+      "verified": false
+    },
+    {
       "program_id": "bj_housing_market_rent_subsidy",
       "name": "市场租房补贴",
       "domain": "housing",
@@ -356,6 +667,206 @@
       "confidence": "high",
       "notes": "三次抽取结果一致，补贴标准表内部自洽（四区为其他区的 60%）。尚未提取排除条款；文号待人工录入。",
       "verified": true
+    },
+    {
+      "program_id": "bj_housing_public_rental_subsidy",
+      "name": "公共租赁住房租金补贴",
+      "domain": "housing",
+      "agency": "北京市住房和城乡建设委员会",
+      "document_refs": [],
+      "source_url": "https://zjw.beijing.gov.cn/bjjs/xxgk/zcwj2024/gfxwj40/xxyx/543339231/index.shtml",
+      "required_attributes": [
+        "hukou_type",
+        "household_size",
+        "household_monthly_income",
+        "household_assets",
+        "owns_property",
+        "district",
+        "welfare_status"
+      ],
+      "key_definitions": {
+        "subsidy_ratio_tier": {
+          "kind": "range_lookup",
+          "attr": "per_capita_monthly_income",
+          "overrides": [
+            {
+              "attr": "welfare_status",
+              "equals": "dibao",
+              "value": 95
+            },
+            {
+              "attr": "welfare_status",
+              "equals": "tekun",
+              "value": 95
+            },
+            {
+              "attr": "welfare_status",
+              "equals": "low_income",
+              "value": 90
+            }
+          ],
+          "bands": [
+            {
+              "value": 70,
+              "min": null,
+              "max": 1200.0
+            },
+            {
+              "value": 50,
+              "min": 1200.0,
+              "max": 1600.0
+            },
+            {
+              "value": 25,
+              "min": 1600.0,
+              "max": 2000.0
+            },
+            {
+              "value": 10,
+              "min": 2000.0,
+              "max": 2400.0
+            }
+          ],
+          "groups": {},
+          "default": null
+        },
+        "asset_size_bucket": {
+          "kind": "range_lookup",
+          "attr": "household_size",
+          "overrides": [],
+          "bands": [
+            {
+              "value": "<=3",
+              "min": null,
+              "max": 3.0
+            },
+            {
+              "value": ">=4",
+              "min": 4.0,
+              "max": null
+            }
+          ],
+          "groups": {},
+          "default": null
+        },
+        "district_group": {
+          "kind": "set_lookup",
+          "attr": "district",
+          "overrides": [],
+          "bands": [],
+          "groups": {
+            "outer": [
+              "怀柔区",
+              "平谷区",
+              "密云区",
+              "延庆区"
+            ]
+          },
+          "default": "standard"
+        }
+      },
+      "eligibility": {
+        "all_of": [
+          {
+            "attr": "hukou_type",
+            "op": "in",
+            "value": [
+              "bj_urban"
+            ],
+            "clause": null,
+            "note": "北京市城镇户籍家庭"
+          },
+          {
+            "attr": "per_capita_monthly_income",
+            "op": "<=",
+            "value": 2400,
+            "clause": null,
+            "note": "申请当月前12个月家庭人均月收入不高于 2400 元"
+          },
+          {
+            "attr": "owns_property",
+            "op": "==",
+            "value": false,
+            "clause": null,
+            "note": "除承租的公租房外，在本市无其他住房"
+          },
+          {
+            "attr": "household_assets",
+            "op": "<=",
+            "value": {
+              "kind": "table",
+              "keys": [
+                "asset_size_bucket"
+              ],
+              "rows": [
+                {
+                  "asset_size_bucket": "<=3",
+                  "value": 570000
+                },
+                {
+                  "asset_size_bucket": ">=4",
+                  "value": 760000
+                }
+              ]
+            },
+            "clause": null,
+            "note": "3人及以下家庭总资产净值不高于 57 万元；4人及以上不高于 76 万元"
+          },
+          {
+            "attr": null,
+            "op": "manual_review",
+            "value": null,
+            "clause": "所承租的公租房须通过市、区住房保障管理部门公开配租方式获得。本工具无法核实配租方式，请向街道住房保障管理部门确认。",
+            "note": null
+          },
+          {
+            "attr": null,
+            "op": "manual_review",
+            "value": null,
+            "clause": "怀柔、平谷、密云、延庆四区的收入分档线与补贴比例由区人民政府自行确定，与本表不同。若居住在上述四区，请以区级标准为准。",
+            "note": null
+          }
+        ]
+      },
+      "benefit": {
+        "cadence": "monthly",
+        "amount": {
+          "kind": "table",
+          "keys": [
+            "public_rental_rent_standard",
+            "subsidized_area"
+          ],
+          "rows": []
+        },
+        "caps": [],
+        "duration": {
+          "kind": "ongoing_conditional",
+          "months": null,
+          "review": "按月发放，自租赁期限开始之日的次月起，需持续满足资格条件并按时交纳租金"
+        }
+      },
+      "exclusivity_group": "bj_housing",
+      "claim_steps": [
+        "自公共租赁住房租赁期限开始之日起，到户籍所在地街道办事处（乡镇人民政府）住房保障管理部门办理租金补贴领取手续",
+        "由街道办事处（乡镇人民政府）住房保障管理部门核对材料并打印《北京市公共租赁住房租金补贴信息确认单》，申请人签字确认",
+        "区住房保障管理部门在 5 个工作日内复核",
+        "复核通过后送达《北京市公共租赁住房租金补贴发放通知单》，自租赁期限开始之日的次月起按月发放"
+      ],
+      "required_documents": [
+        "户名为本人的租金代扣银行卡及复印件",
+        "身份证件",
+        "公共租赁住房租赁合同",
+        "《北京市公共租赁住房租金补贴资格通知单》"
+      ],
+      "benefit_caveats": [
+        "补贴计算公式为：公租房租金补贴 = 公租房租金标准 × 补贴比例 × 补贴面积。",
+        "补贴面积上限为建筑面积 60 平方米；承租面积超过上限的按 60 平方米计算，低于上限的按实际面积计算。",
+        "分档补贴比例：低保家庭及特困人员 95%，城市低收入家庭 90%，人均月收入 1200 元及以下 70%，1200（不含）至 1600 元 50%，1600（不含）至 2000 元 25%，2000（不含）至 2400 元 10%。",
+        "家庭成员中有重度残疾人员、患大病人员，或家庭成员均为 60 周岁以上老人且无子女的，原补贴比例低于 95% 时可提高一档。"
+      ],
+      "confidence": "low",
+      "notes": "单次 RAG 抽取草稿，未经多轮交叉验证，未经人工核对原文。补贴金额依赖公租房租金标准与补贴面积，本系统不计算，结果卡片不显示金额。exclusivity_group 与 bj_housing_market_rent_subsidy 配对，但两者互斥的条款尚未在原文中检索到（仅检索到与廉租住房的互斥条款），互斥关系仍为人工假设。",
+      "verified": false
     }
   ]
 }

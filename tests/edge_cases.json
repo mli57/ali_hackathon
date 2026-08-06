@@ -1,0 +1,373 @@
+{
+  "_comment": [
+    "Boundary profiles, generated 2026-08-06 by an automated validation pass.",
+    "",
+    "UNLIKE tests/fixtures/profiles.json, these expectations are NOT independently",
+    "derived from the policy. They record what the current rule file actually does",
+    "at each boundary, so that a later edit cannot move a boundary silently.",
+    "",
+    "One case carries a `surprise` key: the observed behaviour is questionable and",
+    "a human should decide whether the rule or the test is wrong. Pinning it here",
+    "is not an endorsement -- it is a tripwire.",
+    "",
+    "See validation_report.md for the analysis behind each case."
+  ],
+  "profiles": [
+    {
+      "id": "income_exactly_at_ceiling",
+      "why": "人均 exactly ¥4,200 -- the ceiling is 不高于 (<=), so this qualifies at 第六档.",
+      "profile": {
+        "hukou_type": "bj_urban",
+        "household_size": 3,
+        "household_monthly_income": 12600,
+        "household_assets": 500000,
+        "owns_property": false,
+        "district": "朝阳区",
+        "monthly_rent": 9000,
+        "welfare_status": "none"
+      },
+      "expect": {
+        "qualified": [
+          "bj_housing_market_rent_subsidy"
+        ],
+        "amounts": {
+          "bj_housing_market_rent_subsidy": 1200
+        },
+        "totals": {
+          "monthly": 1200,
+          "one_time": 0
+        }
+      }
+    },
+    {
+      "id": "income_one_fen_over_ceiling",
+      "why": "人均 ¥4,200.03. One 分 over the ceiling must exclude, not round down into eligibility.",
+      "profile": {
+        "hukou_type": "bj_urban",
+        "household_size": 3,
+        "household_monthly_income": 12600.09,
+        "household_assets": 500000,
+        "owns_property": false,
+        "district": "朝阳区",
+        "monthly_rent": 9000,
+        "welfare_status": "none"
+      },
+      "expect": {
+        "qualified": [],
+        "excluded": [
+          "bj_housing_market_rent_subsidy",
+          "bj_housing_public_rental_subsidy"
+        ],
+        "totals": {
+          "monthly": 0,
+          "one_time": 0
+        }
+      }
+    },
+    {
+      "id": "income_exactly_tier3_boundary",
+      "why": "人均 exactly ¥2,700. 第三档 is 人均 <= 2700, so 2700 belongs to 第三档 (¥2,500), not 第四档 (¥2,000).",
+      "profile": {
+        "hukou_type": "bj_urban",
+        "household_size": 3,
+        "household_monthly_income": 8100,
+        "household_assets": 500000,
+        "owns_property": false,
+        "district": "朝阳区",
+        "monthly_rent": 9000,
+        "welfare_status": "none"
+      },
+      "expect": {
+        "qualified": [
+          "bj_housing_market_rent_subsidy"
+        ],
+        "amounts": {
+          "bj_housing_market_rent_subsidy": 2500
+        },
+        "totals": {
+          "monthly": 2500,
+          "one_time": 0
+        }
+      }
+    },
+    {
+      "id": "income_exactly_tier5_boundary",
+      "why": "人均 exactly ¥3,700. Bands are matched in order, so 3700 lands in 第五档 (¥1,500), matching 3200 < 人均 <= 3700.",
+      "profile": {
+        "hukou_type": "bj_urban",
+        "household_size": 3,
+        "household_monthly_income": 11100,
+        "household_assets": 500000,
+        "owns_property": false,
+        "district": "朝阳区",
+        "monthly_rent": 9000,
+        "welfare_status": "none"
+      },
+      "expect": {
+        "qualified": [
+          "bj_housing_market_rent_subsidy"
+        ],
+        "amounts": {
+          "bj_housing_market_rent_subsidy": 1500
+        },
+        "totals": {
+          "monthly": 1500,
+          "one_time": 0
+        }
+      }
+    },
+    {
+      "id": "assets_exactly_570k_size3",
+      "why": "3人 at exactly ¥570,000. 不高于 57 万 is inclusive.",
+      "profile": {
+        "hukou_type": "bj_urban",
+        "household_size": 3,
+        "household_monthly_income": 11400,
+        "household_assets": 570000,
+        "owns_property": false,
+        "district": "朝阳区",
+        "monthly_rent": 9000,
+        "welfare_status": "none"
+      },
+      "expect": {
+        "qualified": [
+          "bj_housing_market_rent_subsidy"
+        ],
+        "amounts": {
+          "bj_housing_market_rent_subsidy": 1200
+        },
+        "totals": {
+          "monthly": 1200,
+          "one_time": 0
+        }
+      }
+    },
+    {
+      "id": "assets_one_yuan_over_570k_size3",
+      "why": "¥570,001 with 3 people. One yuan over the 57 万 limit excludes.",
+      "profile": {
+        "hukou_type": "bj_urban",
+        "household_size": 3,
+        "household_monthly_income": 11400,
+        "household_assets": 570001,
+        "owns_property": false,
+        "district": "朝阳区",
+        "monthly_rent": 9000,
+        "welfare_status": "none"
+      },
+      "expect": {
+        "qualified": [],
+        "excluded": [
+          "bj_housing_market_rent_subsidy",
+          "bj_housing_public_rental_subsidy"
+        ],
+        "totals": {
+          "monthly": 0,
+          "one_time": 0
+        }
+      }
+    },
+    {
+      "id": "assets_exactly_760k_size4",
+      "why": "4人 at exactly ¥760,000 -- the >=4 asset bucket's inclusive ceiling.",
+      "profile": {
+        "hukou_type": "bj_urban",
+        "household_size": 4,
+        "household_monthly_income": 15200,
+        "household_assets": 760000,
+        "owns_property": false,
+        "district": "朝阳区",
+        "monthly_rent": 9000,
+        "welfare_status": "none"
+      },
+      "expect": {
+        "qualified": [
+          "bj_housing_market_rent_subsidy"
+        ],
+        "amounts": {
+          "bj_housing_market_rent_subsidy": 1200
+        },
+        "totals": {
+          "monthly": 1200,
+          "one_time": 0
+        }
+      }
+    },
+    {
+      "id": "assets_between_limits_size3_excluded",
+      "why": [
+        "¥600,000 sits between the two asset limits. With 3 people the 57 万 limit",
+        "applies and the household is out; the same assets with 4 people are fine.",
+        "This is the asset_size_bucket (<=3 / >=4) split, which is NOT the same as",
+        "the household_size_bucket (<=2 / 3+) that sets the amount."
+      ],
+      "profile": {
+        "hukou_type": "bj_urban",
+        "household_size": 3,
+        "household_monthly_income": 11400,
+        "household_assets": 600000,
+        "owns_property": false,
+        "district": "朝阳区",
+        "monthly_rent": 9000,
+        "welfare_status": "none"
+      },
+      "expect": {
+        "qualified": [],
+        "excluded": [
+          "bj_housing_market_rent_subsidy",
+          "bj_housing_public_rental_subsidy"
+        ],
+        "totals": {
+          "monthly": 0,
+          "one_time": 0
+        }
+      }
+    },
+    {
+      "id": "assets_between_limits_size4_qualifies",
+      "why": "Same ¥600,000, 4 people. The >=4 bucket's 76 万 limit applies, so it qualifies.",
+      "profile": {
+        "hukou_type": "bj_urban",
+        "household_size": 4,
+        "household_monthly_income": 15200,
+        "household_assets": 600000,
+        "owns_property": false,
+        "district": "朝阳区",
+        "monthly_rent": 9000,
+        "welfare_status": "none"
+      },
+      "expect": {
+        "qualified": [
+          "bj_housing_market_rent_subsidy"
+        ],
+        "amounts": {
+          "bj_housing_market_rent_subsidy": 1200
+        },
+        "totals": {
+          "monthly": 1200,
+          "one_time": 0
+        }
+      }
+    },
+    {
+      "id": "size_two_benefit_bucket",
+      "why": "2人 at the income ceiling -- 2人及以下 column of 第六档 is ¥1,000, against ¥1,200 for 3人及以上.",
+      "profile": {
+        "hukou_type": "bj_urban",
+        "household_size": 2,
+        "household_monthly_income": 8400,
+        "household_assets": 500000,
+        "owns_property": false,
+        "district": "朝阳区",
+        "monthly_rent": 9000,
+        "welfare_status": "none"
+      },
+      "expect": {
+        "qualified": [
+          "bj_housing_market_rent_subsidy"
+        ],
+        "amounts": {
+          "bj_housing_market_rent_subsidy": 1000
+        },
+        "totals": {
+          "monthly": 1000,
+          "one_time": 0
+        }
+      }
+    },
+    {
+      "id": "single_person_dibao_outer_district",
+      "why": "Highest tier, smallest bucket, discounted district: 第一档 x 2人及以下 x 四区 = ¥1,500. The corner of the table.",
+      "profile": {
+        "hukou_type": "bj_urban",
+        "household_size": 1,
+        "household_monthly_income": 1000,
+        "household_assets": 10000,
+        "owns_property": false,
+        "district": "延庆区",
+        "monthly_rent": 9000,
+        "welfare_status": "dibao"
+      },
+      "expect": {
+        "qualified": [
+          "bj_housing_market_rent_subsidy"
+        ],
+        "amounts": {
+          "bj_housing_market_rent_subsidy": 1500
+        },
+        "totals": {
+          "monthly": 1500,
+          "one_time": 0
+        }
+      }
+    },
+    {
+      "id": "rent_zero_qualifies_at_zero",
+      "surprise": [
+        "A household reporting ¥0 rent comes back 符合条件 with an amount of ¥0.",
+        "The not_to_exceed cap does its job, but the results card then promises a",
+        "benefit of nothing. Arguably ¥0 rent means the household is not renting",
+        "and the program does not apply at all.",
+        "Pinned to current behaviour so a fix is a deliberate, visible change."
+      ],
+      "profile": {
+        "hukou_type": "bj_urban",
+        "household_size": 3,
+        "household_monthly_income": 11400,
+        "household_assets": 500000,
+        "owns_property": false,
+        "district": "朝阳区",
+        "monthly_rent": 0,
+        "welfare_status": "none"
+      },
+      "expect": {
+        "qualified": [
+          "bj_housing_market_rent_subsidy"
+        ],
+        "amounts": {
+          "bj_housing_market_rent_subsidy": 0
+        },
+        "totals": {
+          "monthly": 0,
+          "one_time": 0
+        }
+      }
+    },
+    {
+      "id": "api_accepts_any_district_string",
+      "why": [
+        "Documents the API's contract, which is looser than the form's.",
+        "district_group falls back to `default: standard` for anything outside the",
+        "four named outer districts, so a POST carrying 上海市 scores at the full",
+        "全市 rate.",
+        "",
+        "NOT reachable through the product: 居住区 is a select over all 16 Beijing",
+        "districts (frontend/app.js), and every one of them maps correctly. This",
+        "pins the behaviour in case the district list and district_group are ever",
+        "edited apart -- nothing else checks that they agree."
+      ],
+      "profile": {
+        "hukou_type": "bj_urban",
+        "household_size": 3,
+        "household_monthly_income": 11400,
+        "household_assets": 500000,
+        "owns_property": false,
+        "district": "上海市",
+        "monthly_rent": 9000,
+        "welfare_status": "none"
+      },
+      "expect": {
+        "qualified": [
+          "bj_housing_market_rent_subsidy"
+        ],
+        "amounts": {
+          "bj_housing_market_rent_subsidy": 1200
+        },
+        "totals": {
+          "monthly": 1200,
+          "one_time": 0
+        }
+      }
+    }
+  ]
+}

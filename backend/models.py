@@ -19,6 +19,21 @@ HukouType = Literal["bj_urban", "bj_rural", "non_bj"]
 #: 民政部门认定状态. dibao 最低生活保障, tekun 分散供养特困人员,
 #: low_income 城市低收入家庭, none 以上均否.
 WelfareStatus = Literal["dibao", "tekun", "low_income", "none"]
+#: 就业状态. Was a free-form str until the employment programs landed. Two rules
+#: now compare against it with `in`, and a rule that tests a free string is a
+#: rule that silently never matches -- "灵活就业" and "flexible" are both things
+#: a person could type and only one of them would have worked.
+#: self_employed_founder is 创业组织的法定代表人或主要负责人, which 一次性创业
+#: 补贴 needs and which "employed" does not imply.
+EmploymentStatus = Literal[
+    "employed",
+    "flexible",
+    "self_employed_founder",
+    "unemployed",
+    "student",
+    "retired",
+    "other",
+]
 Cadence = Literal["monthly", "one_time"]
 Confidence = Literal["high", "medium", "low"]
 Status = Literal["qualified", "needs_verification", "excluded"]
@@ -52,7 +67,7 @@ class Profile(BaseModel):
     welfare_status: WelfareStatus | None = None
 
     # Other domains.
-    employment_status: str | None = None
+    employment_status: EmploymentStatus | None = None
     children_ages: list[int] | None = None
 
 

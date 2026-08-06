@@ -1,0 +1,98 @@
+{
+  "_comment": [
+    "DRAFT -- verified: false, confidence: low. Written on 2026-08-06 from a",
+    "SINGLE Bailian RAG pass. Nobody has read the source against it.",
+    "",
+    "There is no subsidy TABLE to extract here, and that is the finding, not a",
+    "failed extraction. The policy is 先缴后补、按险种补、不缴不补: the subsidy",
+    "is computed from what the person actually paid, per insurance type, capped",
+    "at the amount paid. Two people in the same category get different money",
+    "because they chose different contribution bases and different combinations",
+    "of 养老 / 失业 / 医疗. So benefit.amount names the missing input and",
+    "resolves to nothing.",
+    "",
+    "The retrieved 1254.68 元/月 figure is an EXAMPLE for one category at the",
+    "city minimum contribution base (1882.02 元/月 total across three insurance",
+    "types), quoted in a 2024 news item. It is not the rule and is not encoded",
+    "as an amount. It appears in benefit_caveats as an illustration, labelled as",
+    "one. If a later pass tries to promote it to benefit.amount, that is a bug.",
+    "",
+    "The three eligible categories (就业困难人员认定 / 离校 2 年内未就业高校毕",
+    "业生 / 登记失业的初次进京随军家属) are certifications held by a person, not",
+    "household facts, and Profile has no field for any of them. Encoded as a",
+    "manual_review clause rather than invented as a profile attribute -- adding",
+    "a field the intake form cannot honestly ask about would move the problem",
+    "rather than solve it."
+  ],
+
+  "program_id": "bj_employment_flexible_insurance_subsidy",
+  "name": "灵活就业社会保险补贴",
+  "domain": "employment",
+  "agency": "北京市人力资源和社会保障局",
+  "document_refs": [],
+  "source_url": "https://rsj.beijing.gov.cn/xxgk/2024zcwj/202410/t20241009_3914906.html",
+
+  "required_attributes": [
+    "employment_status"
+  ],
+
+  "key_definitions": {},
+
+  "eligibility": {
+    "all_of": [
+      {
+        "attr": "employment_status",
+        "op": "in",
+        "value": ["flexible"],
+        "note": "须实现灵活就业（个体经营、非全日制或新就业形态），并以灵活就业人员身份申报缴纳社会保险费"
+      },
+      {
+        "op": "manual_review",
+        "clause": "须属于下列三类人员之一：经认定的本市就业困难人员、离校 2 年内未就业的高校毕业生、登记失业的初次进京随军家属。本工具无法核实认定状态，请向街道（乡镇）公共就业服务机构确认。"
+      },
+      {
+        "op": "manual_review",
+        "clause": "须已办理个人就业登记满 30 日及以上，并通过劳动取得劳动报酬或经营收入。"
+      }
+    ]
+  },
+
+  "benefit": {
+    "cadence": "monthly",
+    "amount": {
+      "kind": "table",
+      "keys": ["actual_monthly_social_insurance_paid"],
+      "rows": []
+    },
+    "duration": {
+      "kind": "ongoing_conditional",
+      "review": "本市就业困难人员最长 3 年，距法定退休年龄不足 5 年的可延长至退休；离校 2 年内未就业高校毕业生最长 2 年；初次进京随军家属最长 3 年"
+    }
+  },
+
+  "benefit_caveats": [
+    "补贴金额按个人实际缴纳的职工基本养老保险费、失业保险费、职工基本医疗保险费分别计算，遵循“先缴后补、按险种补、不缴不补”，补贴金额不超过实际缴费额。",
+    "举例（非标准，仅供参考）：按本市最低缴费标准同时缴纳三个险种时月缴费约 1882.02 元，就业困难人员可申领约 1254.68 元/月，个人实际承担约 627.34 元/月。实际金额随缴费基数与险种组合变化。",
+    "补贴自申请之月的次月起享受，以税务部门反馈的缴费数据为准。",
+    "出现下列情形之一停止发放：与用人单位建立劳动关系、停止灵活就业、达到法定退休年龄或开始领取养老保险待遇。"
+  ],
+
+  "exclusivity_group": null,
+
+  "claim_steps": [
+    "先行以灵活就业人员身份缴纳社会保险费（先缴后补）",
+    "向街道（乡镇）公共就业服务机构提出认定申请",
+    "经审核认定后，自申请之月的次月起按月享受补贴",
+    "以税务部门反馈的实际缴费数据核发"
+  ],
+  "required_documents": [
+    "身份证件",
+    "个人就业登记记录",
+    "就业困难人员认定材料 / 高校毕业证书 / 随军家属证明（按适用类别）",
+    "灵活就业社会保险费缴费凭证"
+  ],
+
+  "confidence": "low",
+  "verified": false,
+  "notes": "单次 RAG 抽取草稿。补贴金额按实际缴费额逐险种计算，本系统不计算，永远进入 needs_verification。京人社评发〔2024〕13号 为认定审核办法，补贴计发口径来自政策问答与新闻稿，须人工核对原文。"
+}

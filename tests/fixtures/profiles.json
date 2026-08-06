@@ -23,9 +23,16 @@
         "welfare_status": "none"
       },
       "expect": {
-        "qualified": ["bj_housing_market_rent_subsidy"],
-        "amounts": { "bj_housing_market_rent_subsidy": 1200 },
-        "totals": { "monthly": 1200, "one_time": 0 }
+        "qualified": [
+          "bj_housing_market_rent_subsidy"
+        ],
+        "amounts": {
+          "bj_housing_market_rent_subsidy": 1200
+        },
+        "totals": {
+          "monthly": 1200,
+          "one_time": 0
+        }
       }
     },
     {
@@ -47,9 +54,16 @@
         "welfare_status": "low_income"
       },
       "expect": {
-        "qualified": ["bj_housing_market_rent_subsidy"],
-        "amounts": { "bj_housing_market_rent_subsidy": 3000 },
-        "totals": { "monthly": 3000, "one_time": 0 }
+        "qualified": [
+          "bj_housing_market_rent_subsidy"
+        ],
+        "amounts": {
+          "bj_housing_market_rent_subsidy": 3000
+        },
+        "totals": {
+          "monthly": 3000,
+          "one_time": 0
+        }
       }
     },
     {
@@ -72,9 +86,16 @@
         "welfare_status": "none"
       },
       "expect": {
-        "qualified": ["bj_housing_market_rent_subsidy"],
-        "amounts": { "bj_housing_market_rent_subsidy": 2500 },
-        "totals": { "monthly": 2500, "one_time": 0 }
+        "qualified": [
+          "bj_housing_market_rent_subsidy"
+        ],
+        "amounts": {
+          "bj_housing_market_rent_subsidy": 2500
+        },
+        "totals": {
+          "monthly": 2500,
+          "one_time": 0
+        }
       }
     },
     {
@@ -91,9 +112,16 @@
         "welfare_status": "none"
       },
       "expect": {
-        "qualified": ["bj_housing_market_rent_subsidy"],
-        "amounts": { "bj_housing_market_rent_subsidy": 1500 },
-        "totals": { "monthly": 1500, "one_time": 0 }
+        "qualified": [
+          "bj_housing_market_rent_subsidy"
+        ],
+        "amounts": {
+          "bj_housing_market_rent_subsidy": 1500
+        },
+        "totals": {
+          "monthly": 1500,
+          "one_time": 0
+        }
       }
     },
     {
@@ -110,9 +138,16 @@
         "welfare_status": "none"
       },
       "expect": {
-        "qualified": ["bj_housing_market_rent_subsidy"],
-        "amounts": { "bj_housing_market_rent_subsidy": 800 },
-        "totals": { "monthly": 800, "one_time": 0 }
+        "qualified": [
+          "bj_housing_market_rent_subsidy"
+        ],
+        "amounts": {
+          "bj_housing_market_rent_subsidy": 800
+        },
+        "totals": {
+          "monthly": 800,
+          "one_time": 0
+        }
       }
     },
     {
@@ -133,9 +168,16 @@
         "welfare_status": "none"
       },
       "expect": {
-        "qualified": ["bj_housing_market_rent_subsidy"],
-        "amounts": { "bj_housing_market_rent_subsidy": 2500 },
-        "totals": { "monthly": 2500, "one_time": 0 }
+        "qualified": [
+          "bj_housing_market_rent_subsidy"
+        ],
+        "amounts": {
+          "bj_housing_market_rent_subsidy": 2500
+        },
+        "totals": {
+          "monthly": 2500,
+          "one_time": 0
+        }
       }
     },
     {
@@ -156,9 +198,20 @@
       },
       "expect": {
         "qualified": [],
-        "needs_verification": ["bj_housing_market_rent_subsidy"],
-        "unresolved_includes": ["welfare_status"],
-        "totals": { "monthly": 0, "one_time": 0 }
+        "needs_verification": [
+          "bj_housing_market_rent_subsidy",
+          "bj_employment_startup_subsidy",
+          "bj_childcare_national_subsidy",
+          "bj_childcare_maternity_allowance",
+          "bj_employment_flexible_insurance_subsidy"
+        ],
+        "unresolved_includes": [
+          "welfare_status"
+        ],
+        "totals": {
+          "monthly": 0,
+          "one_time": 0
+        }
       }
     },
     {
@@ -175,9 +228,20 @@
       },
       "expect": {
         "qualified": [],
-        "needs_verification": ["bj_housing_market_rent_subsidy"],
-        "unresolved_includes": ["household_assets"],
-        "totals": { "monthly": 0, "one_time": 0 }
+        "needs_verification": [
+          "bj_housing_market_rent_subsidy",
+          "bj_employment_startup_subsidy",
+          "bj_childcare_national_subsidy",
+          "bj_childcare_maternity_allowance",
+          "bj_employment_flexible_insurance_subsidy"
+        ],
+        "unresolved_includes": [
+          "household_assets"
+        ],
+        "totals": {
+          "monthly": 0,
+          "one_time": 0
+        }
       }
     },
     {
@@ -195,8 +259,14 @@
       },
       "expect": {
         "qualified": [],
-        "excluded": ["bj_housing_market_rent_subsidy"],
-        "totals": { "monthly": 0, "one_time": 0 }
+        "excluded": [
+          "bj_housing_market_rent_subsidy",
+          "bj_housing_public_rental_subsidy"
+        ],
+        "totals": {
+          "monthly": 0,
+          "one_time": 0
+        }
       }
     },
     {
@@ -214,8 +284,14 @@
       },
       "expect": {
         "qualified": [],
-        "excluded": ["bj_housing_market_rent_subsidy"],
-        "totals": { "monthly": 0, "one_time": 0 }
+        "excluded": [
+          "bj_housing_market_rent_subsidy",
+          "bj_housing_public_rental_subsidy"
+        ],
+        "totals": {
+          "monthly": 0,
+          "one_time": 0
+        }
       }
     },
     {
@@ -233,8 +309,15 @@
       },
       "expect": {
         "qualified": [],
-        "excluded": ["bj_housing_market_rent_subsidy"],
-        "totals": { "monthly": 0, "one_time": 0 }
+        "excluded": [
+          "bj_housing_market_rent_subsidy",
+          "bj_housing_public_rental_subsidy",
+          "bj_childcare_national_subsidy"
+        ],
+        "totals": {
+          "monthly": 0,
+          "one_time": 0
+        }
       }
     }
   ]

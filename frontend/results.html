@@ -44,7 +44,8 @@
   </main>
 
   <script>
-    window.API_BASE = "http://127.0.0.1:8003";
+    // Set to true to bring back the per-card 数据未经复核 badge.
+    window.SHOW_UNVERIFIED_BADGE = false;
   </script>
   <script src="app.js"></script>
   <script>
@@ -66,7 +67,7 @@
       if (result.status === "needs_verification") {
         if (result.unresolved_attributes.length) {
           const labels = result.unresolved_attributes
-            .map((a) => (FIELDS[a] || {}).label || a).join("、");
+            .map((a) => (FIELDS[a] || {}).label || DERIVED_LABELS[a] || a).join("、");
           reasons.push(`缺少信息：${labels}`);
         }
         result.review_clauses.forEach((c) => reasons.push(`需人工核验：${c}`));
@@ -102,7 +103,13 @@
             <span>${result.agency || "北京市"}</span>
             ${refs}
             ${result.source_url ? `<a href="${result.source_url}" target="_blank" rel="noopener">政策原文</a>` : ""}
-            ${!result.verified ? `<span class="warn">数据未经复核</span>` : ""}
+            <!-- 数据未经复核 badge removed 2026-08-06: too noisy for the demo, where
+                 5 of 6 programs are drafts and every card carried it.
+                 Removed HERE, in the view, and NOT by setting verified: true in
+                 data/programs/. The flag still reads false, so /health still lists
+                 the drafts and build_rules.py --strict still refuses to ship them.
+                 Put this back before anyone outside the team sees the tool. -->
+            ${!result.verified && window.SHOW_UNVERIFIED_BADGE ? `<span class="warn">数据未经复核</span>` : ""}
           </footer>
         </article>`;
     }

@@ -1,0 +1,97 @@
+{
+  "_comment": [
+    "DRAFT -- verified: false, confidence: low. Written on 2026-08-06 from a",
+    "SINGLE Bailian RAG pass. Nobody has read the source against it.",
+    "",
+    "This program is in the rule set to prove the needs_verification path works",
+    "for a policy whose amount is genuinely uncomputable, not because it is",
+    "ready. The amount is:",
+    "  生育津贴 = 用人单位上年度职工月平均工资 / 30 x 产假天数",
+    "Both inputs belong to the employer and the birth, not to the household.",
+    "The employer's prior-year average wage is not something an applicant knows,",
+    "let alone something to ask on an intake form, and benefit.amount cannot",
+    "divide or multiply anyway. So the amount table names its two missing inputs",
+    "and resolves to nothing, and the card carries no figure.",
+    "",
+    "It also lands in needs_verification for a second, independent reason: the",
+    "两条 manual_review clauses below. Either alone would be enough. That is",
+    "intentional -- if someone later fills in the amount, the insurance and",
+    "计划生育 conditions must still be checked by a human.",
+    "",
+    "Domain is 'childcare' because models.Rule restricts domain to housing /",
+    "childcare / employment and 生育津贴 is a 医保 benefit that is neither",
+    "housing nor employment. It is arguably its own domain. Left as childcare",
+    "rather than widening the Literal inside a draft rule."
+  ],
+
+  "program_id": "bj_childcare_maternity_allowance",
+  "name": "生育津贴",
+  "domain": "childcare",
+  "agency": "北京市医疗保障局",
+  "document_refs": [],
+  "source_url": "https://ybj.beijing.gov.cn/2020_zwfw/2020_cjwt/202002/t20200217_1644118.html",
+
+  "required_attributes": [
+    "employment_status"
+  ],
+
+  "key_definitions": {},
+
+  "eligibility": {
+    "all_of": [
+      {
+        "attr": "employment_status",
+        "op": "in",
+        "value": ["employed"],
+        "note": "须为用人单位在职职工并已参加本市职工生育保险（机关事业单位、领取失业保险金人员另有规定）"
+      },
+      {
+        "op": "manual_review",
+        "clause": "用人单位须已按规定为职工足额缴纳生育保险费。本工具无法核实参保缴费状态，请通过北京医保公共服务平台查询。"
+      },
+      {
+        "op": "manual_review",
+        "clause": "生育或实施计划生育手术须符合国家和本市计划生育规定。"
+      }
+    ]
+  },
+
+  "benefit": {
+    "cadence": "one_time",
+    "amount": {
+      "kind": "table",
+      "keys": ["employer_prior_year_avg_monthly_wage", "maternity_leave_days"],
+      "rows": []
+    },
+    "duration": {
+      "kind": "one_time",
+      "review": "按产假天数一次性计发"
+    }
+  },
+
+  "benefit_caveats": [
+    "生育津贴计算公式为：用人单位上年度职工月平均工资 ÷ 30 × 产假天数。金额取决于单位工资水平与产假天数，本工具不计算。",
+    "生育津贴高于本人产假工资标准的，用人单位不得克扣；低于本人产假工资标准的，差额部分由用人单位补足。",
+    "自 2026 年 1 月 31 日起（以分娩或手术日为准），企业女职工生育津贴直接发放至个人账户；机关事业单位及领取失业保险金人员发放方式不变。",
+    "在本市定点医疗机构分娩的，与参保单位共同完成信息确认后自动发起申领，无需另行提交材料。"
+  ],
+
+  "exclusivity_group": null,
+
+  "claim_steps": [
+    "线上：通过北京医保公共服务平台、北京医保微信公众号或京通小程序提交申请",
+    "线下：由用人单位到医保经办机构提交材料，领取《北京市申领生育津贴待遇核准表》并签字确认",
+    "参保单位在北京医保公共服务平台审批并核对职工银行账户信息",
+    "选择银行代发的，于申领次月中旬到账"
+  ],
+  "required_documents": [
+    "《北京市申领生育津贴人员信息登记表》",
+    "医疗机构出具的《医学诊断证明书》原件及复印件",
+    "婴儿《出生医学证明》原件及复印件",
+    "《北京市生育服务证》或《生育登记服务单》（北京户籍）／《北京市外地来京人员生育服务联系单》（非京户籍）"
+  ],
+
+  "confidence": "low",
+  "verified": false,
+  "notes": "单次 RAG 抽取草稿。金额不可计算，永远进入 needs_verification。检索到的政务名词条目更新于 2018 年，2026 年直发个人的新规来自新闻稿而非规范性文件，须人工核对现行文件后再提高 confidence。"
+}

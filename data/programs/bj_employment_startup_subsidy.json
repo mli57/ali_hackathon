@@ -1,0 +1,97 @@
+{
+  "_comment": [
+    "DRAFT -- verified: false, confidence: low. Written on 2026-08-06 from a",
+    "SINGLE Bailian RAG pass. Nobody has read the source against it.",
+    "",
+    "This is the only new program whose amount is genuinely computable, and it",
+    "is computable only in its base case: 8000 元 flat. The full rule is",
+    "  8000 + 1000 x (每招用 1 名本市户籍劳动力并缴纳社保满 6 个月), 上限 10000",
+    "so the real figure is one of 8000 / 9000 / 10000. Profile has no field for",
+    "how many people the business hired, benefit.amount cannot multiply, and",
+    "asking a household intake form about payroll is a stretch. The base amount",
+    "is encoded and the increment is a caveat -- understating, which is the safe",
+    "direction, and the caveat tells the user they may be owed up to 10000.",
+    "",
+    "Every condition that matters here is a fact about a REGISTERED BUSINESS",
+    "(首次创办 / 任法定代表人 / 缴社保满 6 个月 / 经营纳税满 1 年 / 信用良好),",
+    "not about a household. None of them can be checked from the intake form, so",
+    "they are manual_review clauses and this program can never be 'qualified'.",
+    "The card therefore shows 8000 元 alongside the clauses that still have to be",
+    "checked -- which is the intended shape for a program we can price but",
+    "cannot decide."
+  ],
+
+  "program_id": "bj_employment_startup_subsidy",
+  "name": "一次性创业补贴",
+  "domain": "employment",
+  "agency": "北京市人力资源和社会保障局",
+  "document_refs": [],
+  "source_url": "https://rsj.beijing.gov.cn/xxgk/2024zcwj/202406/t20240617_3717147.html",
+
+  "required_attributes": [
+    "employment_status"
+  ],
+
+  "key_definitions": {},
+
+  "eligibility": {
+    "all_of": [
+      {
+        "attr": "employment_status",
+        "op": "in",
+        "value": ["self_employed_founder"],
+        "note": "须为创业组织的法定代表人或主要负责人"
+      },
+      {
+        "op": "manual_review",
+        "clause": "须在本市首次创办创业组织并担任法定代表人或主要负责人。“首次”以本市登记记录为准，本工具无法核实。"
+      },
+      {
+        "op": "manual_review",
+        "clause": "创业人员须在所创办的创业组织缴纳社会保险费累计满 6 个月；入乡创业人员须招用本市户籍劳动力 3 名并为其缴纳社保满 6 个月。"
+      },
+      {
+        "op": "manual_review",
+        "clause": "创业组织须自登记注册之日起正常经营且依法纳税 1 年以上。"
+      },
+      {
+        "op": "manual_review",
+        "clause": "创业人员及创业组织信用良好，未被列入北京市公共信用信息服务平台“黑名单”。"
+      }
+    ]
+  },
+
+  "benefit": {
+    "cadence": "one_time",
+    "amount": { "kind": "fixed", "value": 8000 },
+    "duration": {
+      "kind": "one_time",
+      "review": "一次性发放"
+    }
+  },
+
+  "benefit_caveats": [
+    "基础补贴为 8000 元。每招用 1 名本市户籍劳动力并为其缴纳社保满 6 个月，加发 1000 元（入乡创业在招用 3 名的基础上每多 1 名加发）。",
+    "每个创业组织补贴总额不超过 1 万元。上方金额为基础补贴，未计入加发部分，实际可能更高。",
+    "入乡创业人员创办的创业组织正常经营 6 个月以上的，可先行申领补贴资金的 50%。"
+  ],
+
+  "exclusivity_group": null,
+
+  "claim_steps": [
+    "创业组织登记注册并正常经营、依法纳税满 1 年",
+    "创业人员在本创业组织缴纳社会保险费累计满 6 个月",
+    "向创业组织注册地的区人力资源和社会保障部门提出申请",
+    "经审核公示后一次性发放"
+  ],
+  "required_documents": [
+    "营业执照或登记注册证明",
+    "法定代表人或主要负责人身份证明",
+    "创业人员及所招用人员的社会保险缴费记录",
+    "纳税证明"
+  ],
+
+  "confidence": "low",
+  "verified": false,
+  "notes": "单次 RAG 抽取草稿。京人社服发〔2020〕35号 在两次检索中一致出现，但仍需人工核对原文后录入 manifest。金额仅编码基础档 8000 元，加发部分见 benefit_caveats。"
+}

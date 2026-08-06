@@ -1,0 +1,100 @@
+{
+  "_comment": [
+    "DRAFT -- verified: false, confidence: low. Written on 2026-08-06 from a",
+    "SINGLE Bailian RAG pass. Nobody has read the source against it.",
+    "",
+    "CADENCE IS WRONG AND THE SCHEMA IS WHY. The policy pays 3600 元 per child",
+    "PER YEAR until the child turns 3. models.Cadence is Literal['monthly',",
+    "'one_time'] -- there is no annual. Encoding it as monthly 300 元 would put",
+    "a figure on the card that the household never receives in any month, so",
+    "this uses one_time 3600 元 with duration.kind = fixed_months / months = 12,",
+    "which is at least a payment that really happens at a size that is really",
+    "correct. It still understates: the money recurs for up to three years and",
+    "the results page will not say so. The caveats say so instead.",
+    "Fix properly by adding 'annual' to Cadence -- that is a schema change, so",
+    "it is not being made inside a draft rule file.",
+    "",
+    "PER-CHILD MULTIPLICATION IS NOT DONE. A household with two children under",
+    "3 is entitled to 7200 元/年, not 3600. benefit.amount is Fixed | Table and",
+    "neither multiplies by num_children, so the figure shown is the single-child",
+    "amount. Understating is the safe direction and the caveat says to multiply,",
+    "but this is a real defect, not a rounding choice.",
+    "",
+    "Eligibility deliberately does NOT encode 申领人须为婴幼儿父母一方或法定监",
+    "护人. It is a fact about who fills in the form rather than about the",
+    "household, and making it a manual_review clause would route every single",
+    "applicant to needs_verification and the program would never produce a",
+    "computed result at all. It lives in required_documents instead.",
+    "",
+    "The hukou condition here is the CHILD's 北京市户籍, not the applicant's.",
+    "Profile has one hukou_type field for the household, so bj_urban and",
+    "bj_rural are both accepted and the distinction is lost. Review this."
+  ],
+
+  "program_id": "bj_childcare_national_subsidy",
+  "name": "育儿补贴",
+  "domain": "childcare",
+  "agency": "北京市卫生健康委员会",
+  "document_refs": [],
+  "source_url": "https://www.beijing.gov.cn/zhengce/zhengcefagui/202507/t20250730_4161880.html",
+
+  "required_attributes": [
+    "hukou_type",
+    "children_ages"
+  ],
+
+  "key_definitions": {},
+
+  "eligibility": {
+    "all_of": [
+      {
+        "attr": "hukou_type",
+        "op": "in",
+        "value": ["bj_urban", "bj_rural"],
+        "note": "婴幼儿须具有北京市户籍（户籍迁入本市的 3 周岁以下婴幼儿自落户日起可申领）"
+      },
+      {
+        "attr": "youngest_child_age",
+        "op": "<",
+        "value": 3,
+        "note": "补贴发放至婴幼儿年满 3 周岁止"
+      }
+    ]
+  },
+
+  "benefit": {
+    "cadence": "one_time",
+    "amount": { "kind": "fixed", "value": 3600 },
+    "duration": {
+      "kind": "fixed_months",
+      "months": 12,
+      "review": "每孩每年 3600 元，按年申领，发放至年满 3 周岁止"
+    }
+  },
+
+  "benefit_caveats": [
+    "国家基础标准为每孩每年 3600 元，按年发放，直至婴幼儿年满 3 周岁。上方金额为一个孩子一年的补贴，不是全部。",
+    "多孩家庭按孩数分别计算：两名 3 周岁以下婴幼儿即为每年 7200 元。本工具暂未按孩数累加。",
+    "2022—2024 年出生的婴幼儿按应补贴月数折算金额，首次申请截止时间已延长至 2026 年 12 月 31 日。",
+    "2025 年 1 月 1 日及以后出生的婴幼儿，须在出生当年或次年提出首次申请，并在后续连续两年内续领。"
+  ],
+
+  "exclusivity_group": null,
+
+  "claim_steps": [
+    "以家庭为单位，由 1 名申领人（婴幼儿父母一方或法定监护人）提出申请",
+    "通过京通小程序 / 北京市政务服务网“育儿补贴申领一件事”线上提交，或到属地卫生健康部门线下办理",
+    "审核通过后由财政发放至申领人账户",
+    "次年按规定续领，直至婴幼儿年满 3 周岁"
+  ],
+  "required_documents": [
+    "婴幼儿出生医学证明",
+    "居民户口簿",
+    "申领人身份证件",
+    "证明抚养关系的法定有效文件（收养、监护等情形适用）"
+  ],
+
+  "confidence": "low",
+  "verified": false,
+  "notes": "单次 RAG 抽取草稿。cadence 与按孩数累加两处均为已知偏差，见文件顶部注释。文号（京卫家庭〔2025〕14号）与中办国办实施方案的引用在检索结果中出现过串接，须人工核对后录入 manifest。"
+}
