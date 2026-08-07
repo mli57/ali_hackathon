@@ -8,17 +8,25 @@
 </head>
 <body>
   <main>
-    <header>
+    <header class="hero">
+      <p class="eyebrow">北京住房补贴试运行</p>
       <h1>北京惠民补贴查询</h1>
-      <p class="sub">回答几个问题，看看您可以申请哪些补贴。</p>
+      <p class="sub">回答几个问题，快速查看您可能符合的补贴项目与金额。</p>
+      <ol class="steps" aria-label="查询步骤">
+        <li class="active">填写基础信息</li>
+        <li>补充必要信息</li>
+        <li>查看匹配结果</li>
+      </ol>
     </header>
 
     <div id="error" class="error" hidden></div>
 
-    <form id="intake">
-      <div id="fields"></div>
-      <button type="submit">下一步</button>
-    </form>
+    <section class="panel">
+      <form id="intake">
+        <div id="fields"></div>
+        <button type="submit">下一步</button>
+      </form>
+    </section>
 
     <p class="note">
       本工具仅提供政策匹配参考，最终以各主管部门审核结果为准。

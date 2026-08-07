@@ -8,25 +8,31 @@
 </head>
 <body>
   <main>
-    <header>
+    <header class="hero">
+      <p class="eyebrow">第二步</p>
       <h1>请确认您的信息</h1>
       <p class="sub">确认无误后，我们会再问几个与您可能符合的补贴相关的问题。</p>
+      <ol class="steps" aria-label="查询步骤">
+        <li class="done">填写基础信息</li>
+        <li class="active">补充必要信息</li>
+        <li>查看匹配结果</li>
+      </ol>
     </header>
 
     <div id="error" class="error" hidden></div>
 
-    <form id="confirm-form">
-      <section>
+    <form id="confirm-form" class="stack">
+      <section class="panel">
         <h2>已填写</h2>
         <div id="known"></div>
       </section>
 
-      <section id="derived-section" hidden>
+      <section id="derived-section" class="panel" hidden>
         <h2>系统计算</h2>
         <ul id="derived" class="derived"></ul>
       </section>
 
-      <section id="followup-section" hidden>
+      <section id="followup-section" class="panel" hidden>
         <h2>还需了解</h2>
         <p class="sub" id="followup-why"></p>
         <div id="followups"></div>
