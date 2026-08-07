@@ -245,3 +245,13 @@ a { color: var(--accent); }
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* Threshold hints under form inputs. See the note above FIELDS in app.js --
+   these quote policy numbers for guidance only; nothing is decided from them. */
+.field-hint {
+  display: block;
+  margin-top: .35rem;
+  color: var(--muted);
+  font-size: .78rem;
+  line-height: 1.5;
+}

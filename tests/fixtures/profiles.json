@@ -200,10 +200,10 @@
         "qualified": [],
         "needs_verification": [
           "bj_housing_market_rent_subsidy",
-          "bj_employment_startup_subsidy",
-          "bj_childcare_national_subsidy",
           "bj_childcare_maternity_allowance",
-          "bj_employment_flexible_insurance_subsidy"
+          "bj_childcare_national_subsidy",
+          "bj_employment_flexible_insurance_subsidy",
+          "bj_employment_startup_subsidy"
         ],
         "unresolved_includes": [
           "welfare_status"
@@ -230,10 +230,10 @@
         "qualified": [],
         "needs_verification": [
           "bj_housing_market_rent_subsidy",
-          "bj_employment_startup_subsidy",
-          "bj_childcare_national_subsidy",
           "bj_childcare_maternity_allowance",
-          "bj_employment_flexible_insurance_subsidy"
+          "bj_childcare_national_subsidy",
+          "bj_employment_flexible_insurance_subsidy",
+          "bj_employment_startup_subsidy"
         ],
         "unresolved_includes": [
           "household_assets"

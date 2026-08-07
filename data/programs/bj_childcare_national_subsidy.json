@@ -14,11 +14,15 @@
     "Fix properly by adding 'annual' to Cadence -- that is a schema change, so",
     "it is not being made inside a draft rule file.",
     "",
-    "PER-CHILD MULTIPLICATION IS NOT DONE. A household with two children under",
-    "3 is entitled to 7200 元/年, not 3600. benefit.amount is Fixed | Table and",
-    "neither multiplies by num_children, so the figure shown is the single-child",
-    "amount. Understating is the safe direction and the caveat says to multiply,",
-    "but this is a real defect, not a rounding choice.",
+    "PER-CHILD MULTIPLICATION: fixed 2026-08-07. benefit.amount is a Table over",
+    "num_children_under_3 (derived in derive.py), enumerating 1-6 children at",
+    "3600 元 each, because Table cannot multiply and a row per count is the only",
+    "way to express it. Note the count is children UNDER 3, not num_children --",
+    "a household of [1, 5] has two children and one subsidy.",
+    "",
+    "A 7th eligible child returns no_match rather than a wrong number: the card",
+    "loses its figure and gains 补贴金额表未覆盖此情况. Deliberate. Extend the",
+    "rows if that ever needs to be real.",
     "",
     "Eligibility deliberately does NOT encode 申领人须为婴幼儿父母一方或法定监",
     "护人. It is a fact about who fills in the form rather than about the",
@@ -63,8 +67,19 @@
   },
 
   "benefit": {
-    "cadence": "one_time",
-    "amount": { "kind": "fixed", "value": 3600 },
+    "cadence": "annual",
+    "amount": {
+      "kind": "table",
+      "keys": ["num_children_under_3"],
+      "rows": [
+        { "num_children_under_3": 1, "value": 3600 },
+        { "num_children_under_3": 2, "value": 7200 },
+        { "num_children_under_3": 3, "value": 10800 },
+        { "num_children_under_3": 4, "value": 14400 },
+        { "num_children_under_3": 5, "value": 18000 },
+        { "num_children_under_3": 6, "value": 21600 }
+      ]
+    },
     "duration": {
       "kind": "fixed_months",
       "months": 12,
@@ -73,8 +88,7 @@
   },
 
   "benefit_caveats": [
-    "国家基础标准为每孩每年 3600 元，按年发放，直至婴幼儿年满 3 周岁。上方金额为一个孩子一年的补贴，不是全部。",
-    "多孩家庭按孩数分别计算：两名 3 周岁以下婴幼儿即为每年 7200 元。本工具暂未按孩数累加。",
+    "⚠️ 本补贴按年发放（每孩每年 3600 元），发放至婴幼儿年满 3 周岁止，并非只发一次。卡片上标注的「一次性」为展示限制。",
     "2022—2024 年出生的婴幼儿按应补贴月数折算金额，首次申请截止时间已延长至 2026 年 12 月 31 日。",
     "2025 年 1 月 1 日及以后出生的婴幼儿，须在出生当年或次年提出首次申请，并在后续连续两年内续领。"
   ],

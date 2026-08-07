@@ -142,6 +142,25 @@ def result_for(rule: Rule, attrs: dict[str, Any]) -> MatchResult:
             if amount_res.no_match:
                 review = [*review, f"{rule.name}：补贴金额表未覆盖此情况"]
 
+    # An amount is only honest once eligibility was actually checkable.
+    #
+    # A Fixed amount doesn't read the profile, so it resolves for anybody --
+    # 育儿补贴 rendered ¥3,600 at a household that never said whether it has
+    # children, purely because 3600 is a constant. The figure was real; the
+    # household it was shown to was hypothetical.
+    #
+    # Note this deliberately keys on unresolved_attributes and NOT on
+    # review_clauses. The two mean different things:
+    #   unresolved  we never learned a household fact -> we cannot say the
+    #               amount applies to THIS household, so show nothing
+    #   review      we know the household, but a condition needs a human or an
+    #               external record -> the amount is what they'd get if it
+    #               holds, so show it
+    # That distinction is what keeps 一次性创业补贴 showing ¥8,000 next to its
+    # four unverifiable business clauses, which is the intended behaviour.
+    if unresolved:
+        amount = None
+
     return MatchResult(
         program_id=rule.program_id,
         name=rule.name,

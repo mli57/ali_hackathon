@@ -76,12 +76,15 @@ def aggregate(results: list[MatchResult]) -> MatchResponse:
             totals.monthly += result.amount
         elif result.cadence == "one_time":
             totals.one_time += result.amount
+        elif result.cadence == "annual":
+            totals.annual += result.amount
 
     # Monthly and one-time are reported separately and never summed. ¥1,200/月
     # and ¥10,000 一次性 are different kinds of thing and a single combined
     # figure would not mean anything.
     totals.monthly = round(totals.monthly, 2)
     totals.one_time = round(totals.one_time, 2)
+    totals.annual = round(totals.annual, 2)
 
     return MatchResponse(
         totals=totals,

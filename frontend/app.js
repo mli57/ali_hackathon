@@ -12,6 +12,14 @@
 const API = window.API_BASE || "http://127.0.0.1:8000";
 
 // How to ask for each attribute the backend might request as a follow-up.
+//
+// `hint` renders under the input. NOTE the thresholds quoted in hints (4200,
+// 2400, 570000, 760000) are DUPLICATED from the eligibility predicates in
+// data/rules.json -- the API exposes no endpoint for them today. They are
+// display-only guidance and no decision is made from them, but they can drift:
+// if a policy threshold changes in data/programs/, change it here too. The
+// amounts on the results cards are unaffected either way, since those come
+// from the API response.
 const FIELDS = {
   hukou_type: {
     label: "户籍类型",
@@ -23,8 +31,18 @@ const FIELDS = {
     ],
   },
   household_size: { label: "家庭人口数", type: "number", min: 1, max: 20 },
-  household_monthly_income: { label: "家庭月总收入（元）", type: "number", min: 0 },
-  household_assets: { label: "家庭总资产（元）", type: "number", min: 0 },
+  household_monthly_income: {
+    label: "家庭月总收入（元）",
+    type: "number",
+    min: 0,
+    hint: "填全家税前月总收入。资格按人均计算：人均月收入 ≤4200 元可申请市场租房补贴，≤2400 元还可申请公租房租金补贴。人均越低补贴档次越高（≤2700 元为第三档）。",
+  },
+  household_assets: {
+    label: "家庭总资产（元）",
+    type: "number",
+    min: 0,
+    hint: "家庭总资产净值。3 人及以下需 ≤57 万元，4 人及以上需 ≤76 万元。",
+  },
   owns_property: {
     label: "家庭是否拥有自有住房",
     type: "select",
@@ -49,6 +67,13 @@ const FIELDS = {
       ["tekun", "分散供养特困人员"],
       ["low_income", "城市低收入家庭"],
     ],
+    // Deliberately states what this is NOT. 第一档/第二档 are 民政 designations,
+    // not income bands -- that is why income_tier carries `overrides`. Someone
+    // who reads "城市低收入家庭" as "my income is low" and selects it without
+    // the certification jumps a 3-person household from 第六档 (¥1,200) to
+    // 第二档 (¥3,000), and walks into a housing office expecting ¥1,800/month
+    // that is not theirs. Overstating is the dangerous direction.
+    hint: "须已由民政部门正式认定并持有相关证明，不能按自己的收入判断。未经认定请选「以上均否」——收入高低已由上一题计算。",
   },
   employment_status: {
     label: "就业状态",
@@ -142,7 +167,8 @@ function renderField(name, current) {
     input = `<input type="${field.type}" name="${name}" value="${value}"${min}${max}${required}>`;
   }
 
-  return `<label><span>${field.label}</span>${input}</label>`;
+  const hint = field.hint ? `<small class="field-hint">${field.hint}</small>` : "";
+  return `<label><span>${field.label}</span>${input}${hint}</label>`;
 }
 
 async function post(path, body) {
@@ -167,5 +193,9 @@ function showError(message) {
 function money(amount, cadence) {
   if (amount === null || amount === undefined) return "待定";
   const formatted = Number(amount).toLocaleString("zh-CN");
-  return cadence === "one_time" ? `¥${formatted}（一次性）` : `¥${formatted}/月`;
+  // 一次性 means once and never again. Saying it about a benefit that renews
+  // every year until the child turns 3 understates it by up to two thirds.
+  if (cadence === "annual") return `¥${formatted}（一年可领一次）`;
+  if (cadence === "one_time") return `¥${formatted}（一次性）`;
+  return `¥${formatted}/月`;
 }

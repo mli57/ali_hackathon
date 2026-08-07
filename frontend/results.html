@@ -64,6 +64,7 @@
     // Monthly and one-time are shown as separate figures. Adding ¥/月 to a
     // one-off payment would produce a number that doesn't mean anything.
     if (totals.monthly) figures.push(`<div class="total-item"><strong>¥${totals.monthly.toLocaleString("zh-CN")}</strong><span>每月可领</span></div>`);
+    if (totals.annual) figures.push(`<div class="total-item"><strong>¥${totals.annual.toLocaleString("zh-CN")}</strong><span>每年可领</span></div>`);
     if (totals.one_time) figures.push(`<div class="total-item"><strong>¥${totals.one_time.toLocaleString("zh-CN")}</strong><span>一次性</span></div>`);
     document.getElementById("totals").innerHTML = figures.length
       ? figures.join("")

@@ -106,7 +106,8 @@ def validate(rules: list[Rule], manifest: dict[str, dict]) -> tuple[list[str], l
             used.add(key_def.attr)
         declared = set(rule.required_attributes)
         derived = {"per_capita_monthly_income", "per_capita_household_assets",
-                   "num_children", "youngest_child_age", "oldest_child_age"}
+                   "num_children", "num_children_under_3",
+                   "youngest_child_age", "oldest_child_age"}
         undeclared = used - declared - derived
         if undeclared:
             warnings.append(

@@ -36,6 +36,11 @@ def derive(profile: Profile) -> dict[str, Any]:
 
     if profile.children_ages is not None:
         attrs["num_children"] = len(profile.children_ages)
+        # 育儿补贴 pays per eligible child, so the count that decides the money
+        # is not num_children -- a household of [1, 5] has two children and one
+        # subsidy. youngest_child_age decides *whether* they qualify; this
+        # decides *how many times*.
+        attrs["num_children_under_3"] = sum(1 for age in profile.children_ages if age < 3)
         if profile.children_ages:
             attrs["youngest_child_age"] = min(profile.children_ages)
             attrs["oldest_child_age"] = max(profile.children_ages)
@@ -50,6 +55,7 @@ DERIVED_ATTRIBUTES = frozenset(
         "per_capita_monthly_income",
         "per_capita_household_assets",
         "num_children",
+        "num_children_under_3",
         "youngest_child_age",
         "oldest_child_age",
     }
@@ -60,6 +66,7 @@ DERIVED_INPUTS: dict[str, tuple[str, ...]] = {
     "per_capita_monthly_income": ("household_monthly_income", "household_size"),
     "per_capita_household_assets": ("household_assets", "household_size"),
     "num_children": ("children_ages",),
+    "num_children_under_3": ("children_ages",),
     "youngest_child_age": ("children_ages",),
     "oldest_child_age": ("children_ages",),
 }

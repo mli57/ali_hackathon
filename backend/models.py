@@ -34,7 +34,11 @@ EmploymentStatus = Literal[
     "retired",
     "other",
 ]
-Cadence = Literal["monthly", "one_time"]
+#: How often the money arrives. `annual` was added 2026-08-07 for 育儿补贴,
+#: which pays every year until the child turns 3 -- it had been squeezed into
+#: one_time and rendered as 「一次性」, which told people a recurring benefit
+#: was a single payment. one_time still means genuinely once (一次性创业补贴).
+Cadence = Literal["monthly", "one_time", "annual"]
 Confidence = Literal["high", "medium", "low"]
 Status = Literal["qualified", "needs_verification", "excluded"]
 
@@ -256,10 +260,13 @@ class MatchResult(BaseModel):
 
 
 class Totals(BaseModel):
-    """Monthly and one-time are never added together. They are different things."""
+    """Each cadence is totalled separately. They are never added together --
+    ¥1,200/月, ¥3,600/年 and ¥8,000 once are three different kinds of thing and
+    a single combined figure would not mean anything."""
 
     monthly: float = 0.0
     one_time: float = 0.0
+    annual: float = 0.0
 
 
 class MatchResponse(BaseModel):
